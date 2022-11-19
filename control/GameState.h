@@ -6,10 +6,10 @@
 #define TETRISCLONE_GAMESTATE_H
 
 
-#include "../board/Board.h"
-#include "../piece/Piece.h"
-#include "../piece/OPiece.h"
-#include "../piece/LPiece.h"
+#include "../model/board/Board.h"
+#include "../model/piece/Piece.h"
+#include "../model/piece/OPiece.h"
+#include "../model/piece/LPiece.h"
 
 class GameState
 {

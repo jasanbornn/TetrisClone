@@ -7,13 +7,13 @@
 
 
 #include <SFML/Graphics/RenderWindow.hpp>
-#include "../model/control/GameState.h"
+#include "../control/GameState.h"
 
 class Renderer
 {
     sf::RenderWindow* pWindow;
 
-    void drawTile(int typeType, int row, int col);
+    void drawTile(Tile tile);
 
 public:
     explicit Renderer(sf::RenderWindow* pWindow);
@@ -22,7 +22,7 @@ public:
 
     void drawPiece(Piece piece);
 
-
+    void drawBoard(Board board);
 };
 
 

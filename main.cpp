@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include "input/InputHandler.h"
 #include "render/Renderer.h"
-#include "model/control/Updater.h"
+#include "control/Updater.h"
 #include "WindowConstants.h"
 #include "model/piece/OPiece.h"
 

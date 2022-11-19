@@ -6,6 +6,8 @@
 #define TETRISCLONE_BOARD_H
 
 #include <vector>
+#include <array>
+#include "../piece/Tile.h"
 
 #define BOARD_HEIGHT 40
 #define BOARD_WIDTH 10
@@ -17,12 +19,17 @@ class Board
     int width;
     int height;
 
-    int data[BOARD_HEIGHT][BOARD_WIDTH];
-
-    void setData(int tile, int row, int col);
+    std::array<std::array<Tile,BOARD_WIDTH>,BOARD_HEIGHT> tiles;
 
 public:
     Board();
+
+    void addTile(Tile tile);
+    void removeTile(int row, int col);
+
+    Tile getTile(int row, int col);
+
+    std::array<std::array<Tile,BOARD_WIDTH>,BOARD_HEIGHT> getTiles();
 };
 
 

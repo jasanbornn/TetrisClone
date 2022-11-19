@@ -10,16 +10,31 @@ Board::Board()
     this->width = BOARD_WIDTH;
     this->height = BOARD_HEIGHT;
 
-    for (int i = 0; i < BOARD_HEIGHT; i++)
+    for (int row = 0; row < BOARD_HEIGHT; row++)
     {
-        for (int j = 0; j < BOARD_WIDTH; j++)
+        for (int col = 0; col < BOARD_WIDTH; col++)
         {
-            setData(TILE_NULL,i,j);
+            addTile(Tile(TILE_NULL, row, col));
         }
     }
 }
 
-void Board::setData(int tile, int row, int col)
+void Board::addTile(Tile tile)
 {
-    this->data[row][col] = tile;
+    this->tiles[tile.getRow()][tile.getCol()] = tile;
+}
+
+void Board::removeTile(int row, int col)
+{
+    this->tiles[row][col] = Tile(TILE_NULL, row, col);
+}
+
+Tile Board::getTile(int row, int col)
+{
+    return this->tiles[row][col];
+}
+
+std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> Board::getTiles()
+{
+    return this->tiles;
 }

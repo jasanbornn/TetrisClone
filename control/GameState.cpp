@@ -3,8 +3,6 @@
 //
 
 #include "GameState.h"
-#include "../piece/Piece.h"
-#include "../piece/LPiece.h"
 
 GameState::GameState()
 {

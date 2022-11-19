@@ -63,30 +63,67 @@ void Renderer::render(GameState gameState)
     //Draw active piece
     drawPiece(piece);
 
+    //Draw board pieces
+    drawBoard(board);
+
     // end the current frame
     pWindow->display();
 }
 
-void Renderer::drawTile(int tileType, int row, int col)
+void Renderer::drawTile(Tile tile)
 {
+    int row = tile.getRow();
+    int col = tile.getCol();
+    int tileType = tile.getTileType();
+
     if (row >= BOARD_HEIGHT || col >= BOARD_WIDTH || row < 0 || col < 0)
     {
         return;
     }
 
-    sf::RectangleShape tile(sf::Vector2f(TILE_RENDER_WIDTH, TILE_RENDER_WIDTH));
+    sf::RectangleShape tileRender(sf::Vector2f(TILE_RENDER_WIDTH, TILE_RENDER_WIDTH));
 
-    tile.setPosition((WINDOW_WIDTH / 2.f - BOARD_RENDER_WIDTH / 2.f) + TILE_RENDER_WIDTH * col,
-                     TILE_RENDER_WIDTH * (row - BOARD_HEIGHT / 2.f));
-    if (tileType == TILE_NULL)
+    tileRender.setPosition((WINDOW_WIDTH / 2.f - BOARD_RENDER_WIDTH / 2.f) + TILE_RENDER_WIDTH * col,
+                           TILE_RENDER_WIDTH * (row - BOARD_HEIGHT / 2.f));
+
+
+    switch(tileType)
     {
-        tile.setFillColor(sf::Color::Transparent);
-    } else
-    {
-        tile.setFillColor(sf::Color::Blue);
+        case TILE_NULL:
+            tileRender.setFillColor(sf::Color::Transparent);
+            break;
+        case TILE_BLUE:
+            tileRender.setFillColor(sf::Color::Blue);
+            break;
+        case TILE_CYAN:
+            tileRender.setFillColor(sf::Color::Cyan);
+            break;
+        case TILE_GREEN:
+            tileRender.setFillColor(sf::Color::Green);
+            break;
+        case TILE_ORANGE:
+            tileRender.setFillColor(sf::Color::Black);
+            break;
+        case TILE_PURPLE:
+            tileRender.setFillColor(sf::Color::Magenta);
+            break;
+        case TILE_RED:
+            tileRender.setFillColor(sf::Color::Red);
+            break;
+        case TILE_YELLOW:
+            tileRender.setFillColor(sf::Color::Yellow);
+            break;
+        default:
+            tileRender.setFillColor(sf::Color::Transparent);
     }
 
-    pWindow->draw(tile);
+    if(tileType != TILE_NULL)
+    {
+        tileRender.setOutlineThickness(1.f);
+        tileRender.setOutlineColor(sf::Color(0x999999));
+    }
+
+    pWindow->draw(tileRender);
 }
 
 void Renderer::drawPiece(Piece piece)
@@ -96,9 +133,20 @@ void Renderer::drawPiece(Piece piece)
 
     for (auto& tile: tiles)
     {
-        drawTile(tile.getTileType(), tile.getRow(), tile.getCol());
+        drawTile(tile);
     }
 
+}
+
+void Renderer::drawBoard(Board board)
+{
+    for (auto& rowOfTiles: board.getTiles())
+    {
+        for (auto& tile: rowOfTiles)
+        {
+            drawTile(tile);
+        }
+    }
 }
 
 

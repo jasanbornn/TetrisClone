@@ -7,9 +7,9 @@
 
 
 #include <SFML/Graphics/RenderWindow.hpp>
-#include "../../input/Input.h"
-#include "../board/Board.h"
-#include "../piece/Piece.h"
+#include "../input/Input.h"
+#include "../model/board/Board.h"
+#include "../model/piece/Piece.h"
 #include "GameState.h"
 
 class Updater
