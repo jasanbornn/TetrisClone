@@ -67,63 +67,54 @@ Piece::Piece(int xPos, int yPos)
 //    }
 
 
-void Piece::moveUp()
-{
-
-}
-
 void Piece::moveDown()
 {
-    if (canMoveTo(1, 0))
+    for (auto& tile: tiles)
     {
-        for (auto& tile: tiles)
-        {
-            tile.move(1, 0);
-        }
+        tile.move(1, 0);
     }
 }
 
 void Piece::moveLeft()
 {
-    if (canMoveTo(0, -1))
+    for (auto& tile: tiles)
     {
-        for (auto& tile: tiles)
-        {
-            tile.move(0, -1);
-        }
+        tile.move(0, -1);
     }
 }
 
 void Piece::moveRight()
 {
-    if (canMoveTo(0, 1))
+    for (auto& tile: tiles)
     {
-        for (auto& tile: tiles)
-        {
-            tile.move(0, 1);
-        }
+        tile.move(0, 1);
     }
 }
 
-bool Piece::canMoveTo(int dRow, int dCol)
-{
-
-    //4 tiles per piece
-    for (int i = 0; i < TILES_PER_PIECE; i++)
-    {
-        if (tiles[i].getCol() + dCol > BOARD_WIDTH - 1 || tiles[i].getCol() + dCol < 0)
-        {
-            return false;
-        }
-
-        if (tiles[i].getRow() + dRow > BOARD_HEIGHT - 1 || tiles[i].getRow() + dRow < 0)
-        {
-            return false;
-        }
-
-    }
-    return true;
-}
+//bool Piece::canMoveTo(int dRow, int dCol)
+//{
+//
+//    std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> boardTiles = this->board.getTiles();
+//    for (int i = 0; i < TILES_PER_PIECE; i++)
+//    {
+//        if (tiles[i].getCol() + dCol > BOARD_WIDTH - 1 || tiles[i].getCol() + dCol < 0)
+//        {
+//            return false;
+//        }
+//
+//        if (tiles[i].getRow() + dRow > BOARD_HEIGHT - 1 || tiles[i].getRow() + dRow < 0)
+//        {
+//            return false;
+//        }
+//
+//        if (boardTiles[tiles[i].getRow()][tiles[i].getCol()].getTileType() != TILE_NULL)
+//        {
+//            return false;
+//        }
+//
+//    }
+//    return true;
+//}
 
 std::array<Tile, TILES_PER_PIECE>& Piece::getTiles()
 {

@@ -3,7 +3,6 @@
 //
 
 #include "Board.h"
-#include "../piece/Tile.h"
 
 Board::Board()
 {
@@ -37,4 +36,12 @@ Tile Board::getTile(int row, int col)
 std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> Board::getTiles()
 {
     return this->tiles;
+}
+
+void Board::addPiece(Piece piece)
+{
+    for(auto& tile : piece.getTiles())
+    {
+        addTile(tile);
+    }
 }

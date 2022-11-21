@@ -8,10 +8,10 @@
 #include <vector>
 #include <array>
 #include "../piece/Tile.h"
+#include "../piece/Piece.h"
 
 #define BOARD_HEIGHT 40
 #define BOARD_WIDTH 10
-
 
 
 class Board
@@ -19,17 +19,20 @@ class Board
     int width;
     int height;
 
-    std::array<std::array<Tile,BOARD_WIDTH>,BOARD_HEIGHT> tiles;
+    std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> tiles;
 
 public:
     Board();
 
     void addTile(Tile tile);
+
     void removeTile(int row, int col);
 
     Tile getTile(int row, int col);
 
-    std::array<std::array<Tile,BOARD_WIDTH>,BOARD_HEIGHT> getTiles();
+    std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> getTiles();
+
+    void addPiece(Piece piece);
 };
 
 

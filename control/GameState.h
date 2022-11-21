@@ -10,6 +10,7 @@
 #include "../model/piece/Piece.h"
 #include "../model/piece/OPiece.h"
 #include "../model/piece/LPiece.h"
+#include "../model/piece/TPiece.h"
 
 class GameState
 {

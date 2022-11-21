@@ -18,7 +18,7 @@ GameState Updater::update(const Input& input)
 
     for (int i = 0; i < events.size(); i++)
     {
-        switch(events.at(i).type)
+        switch (events.at(i).type)
         {
             case sf::Event::Closed:
                 pWindow->close();
@@ -40,17 +40,26 @@ GameState Updater::update(const Input& input)
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
                 {
-                    piece.moveDown();
+                    if(pieceCanMove(piece,1, 0))
+                    {
+                        piece.moveDown();
+                    }
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
                 {
-                    piece.moveLeft();
+                    if(pieceCanMove(piece,0, -1))
+                    {
+                        piece.moveLeft();
+                    }
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
                 {
-                    piece.moveRight();
+                    if(pieceCanMove(piece,0, 1))
+                    {
+                        piece.moveRight();
+                    }
                 }
 
                 break;
@@ -93,8 +102,33 @@ GameState Updater::update(const Input& input)
         }
     }
 
-    gameState = GameState(board,piece);
+    gameState = GameState(board, piece);
 
     return gameState;
 
+}
+
+bool Updater::pieceCanMove(Piece piece, int dRow, int dCol)
+{
+    std::array<Tile, TILES_PER_PIECE> pieceTiles = piece.getTiles();
+    std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> boardTiles = this->gameState.getBoardState().getTiles();
+    for (int i = 0; i < TILES_PER_PIECE; i++)
+    {
+        if (pieceTiles[i].getCol() + dCol > BOARD_WIDTH - 1 || pieceTiles[i].getCol() + dCol < 0)
+        {
+            return false;
+        }
+
+        if (pieceTiles[i].getRow() + dRow > BOARD_HEIGHT - 1 || pieceTiles[i].getRow() + dRow < 0)
+        {
+            return false;
+        }
+
+        if (boardTiles[pieceTiles[i].getRow() + dRow][pieceTiles[i].getCol() + dCol].getTileType() != TILE_NULL)
+        {
+            return false;
+        }
+
+    }
+    return true;
 }

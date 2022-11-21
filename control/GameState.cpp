@@ -4,16 +4,23 @@
 
 #include "GameState.h"
 
+
 GameState::GameState()
 {
     this->board = Board();
-    this->piece = OPiece(20,4);
+    this->piece = TPiece(20, 4);
+
+//    Piece p = TPiece(30, 5);
+//
+//    board.addPiece(p);
+//    board.addTile(Tile(TILE_RED, 35, 5));
 }
 
 GameState::GameState(Board board, Piece piece)
 {
     this->board = board;
     this->piece = piece;
+
 };
 
 void GameState::setBoardState(Board newBoard)

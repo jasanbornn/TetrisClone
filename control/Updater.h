@@ -23,6 +23,8 @@ public:
     explicit Updater(sf::RenderWindow* pWindow);
 
     GameState update(const Input& input);
+
+    bool pieceCanMove(Piece piece, int dRow, int dCol);
 };
 
 

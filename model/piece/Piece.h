@@ -14,35 +14,30 @@
 #define ROT_LEFT 3
 
 #include <array>
-#include "../board/Board.h"
 #include "Tile.h"
 
 
 class Piece
 {
 
-
 protected:
 
     int rotation;
-
-    //Each piece will be made of 4 tiles (called tetrominos)
-    std::array<Tile,TILES_PER_PIECE> tiles;
-
+    std::array<Tile, TILES_PER_PIECE> tiles;
 
 public:
 
     Piece(int xPos, int yPos);
 
-    std::array<Tile,TILES_PER_PIECE>& getTiles();
+    std::array<Tile, TILES_PER_PIECE>& getTiles();
 
-
-    void moveUp();
     void moveDown();
+
     void moveLeft();
+
     void moveRight();
 
-    bool canMoveTo(int dRow, int dCol);
+//    bool canMoveTo(int dRow, int dCol);
 
 
 };
