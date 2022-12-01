@@ -4,13 +4,14 @@
 
 #include "GameState.h"
 
+
 #include <utility>
 
 
 GameState::GameState()
 {
     this->pBoard = std::make_shared<Board>();
-    this->pPiece = std::make_shared<TPiece>(25,5);
+    this->pPiece = std::make_shared<ZPiece>(25,5);
 
 }
 

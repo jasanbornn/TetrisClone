@@ -11,6 +11,11 @@
 #include "../model/piece/OPiece.h"
 #include "../model/piece/LPiece.h"
 #include "../model/piece/TPiece.h"
+#include "../model/piece/JPiece.h"
+#include "../model/piece/IPiece.h"
+#include "../model/piece/SPiece.h"
+#include "../model/piece/ZPiece.h"
+
 #include <memory>
 
 class GameState

@@ -8,8 +8,10 @@ TPiece::TPiece(int row, int col) : Piece(row, col)
 {
 
     /*
+     * Tile number map
+     *
      *  #    3
-     * ###  102
+     *  ###  102
      */
     tiles[0] = Tile(TILE_PURPLE, row, col);
     tiles[1] = Tile(TILE_PURPLE, row, col - 1);

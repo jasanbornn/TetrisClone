@@ -12,6 +12,9 @@ class JPiece : public Piece
 {
 public:
     JPiece(int row, int col);
+
+    void rotateLeft() override;
+    void rotateRight() override;
 };
 
 

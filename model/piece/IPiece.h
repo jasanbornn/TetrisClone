@@ -12,6 +12,9 @@ class IPiece : public Piece
 {
 public:
     IPiece(int row, int col);
+
+    void rotateLeft() override;
+    void rotateRight() override;
 };
 
 

@@ -12,6 +12,9 @@ class LPiece : public Piece
 {
 public:
     LPiece(int row, int col);
+
+    void rotateLeft() override;
+    void rotateRight() override;
 };
 
 

@@ -12,6 +12,9 @@ class ZPiece : public Piece
 {
 public:
     ZPiece(int row, int col);
+
+    void rotateLeft() override;
+    void rotateRight() override;
 };
 
 #endif //TETRISCLONE_ZPIECE_H

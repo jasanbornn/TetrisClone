@@ -12,6 +12,9 @@ class SPiece : public Piece
 {
 public:
     SPiece(int row, int col);
+
+    void rotateLeft() override;
+    void rotateRight() override;
 };
 
 
