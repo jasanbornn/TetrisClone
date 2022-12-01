@@ -11,25 +11,28 @@
 #include "../model/piece/OPiece.h"
 #include "../model/piece/LPiece.h"
 #include "../model/piece/TPiece.h"
+#include <memory>
 
 class GameState
 {
-    Board board;
-    Piece piece = LPiece(20,5);
+//    Board* pBoard;
+//    Piece* pPiece;
 
+    std::shared_ptr<Board> pBoard;
+    std::shared_ptr<Piece> pPiece;
 public:
 
     GameState();
 
-    GameState(Board board, Piece piece);
+    GameState(std::shared_ptr<Board> pBoard, std::shared_ptr<Piece> pPiece);
 
-    void setBoardState(Board newBoard);
+    void setBoardState(std::shared_ptr<Board> pBoard);
 
-    Board getBoardState();
+    std::shared_ptr<Board> getBoardState();
 
-    void setPieceState(Piece newPiece);
+    void setPieceState(std::shared_ptr<Piece> pPiece);
 
-    Piece getPieceState();
+    std::shared_ptr<Piece> getPieceState();
 };
 
 

@@ -121,3 +121,12 @@ std::array<Tile, TILES_PER_PIECE>& Piece::getTiles()
     return this->tiles;
 }
 
+void Piece::rotateLeft()
+{
+
+}
+
+void Piece::rotateRight()
+{
+
+}

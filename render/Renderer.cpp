@@ -17,8 +17,8 @@ Renderer::Renderer(sf::RenderWindow* pWindow)
 
 void Renderer::render(GameState gameState)
 {
-    Board board = gameState.getBoardState();
-    Piece piece = gameState.getPieceState();
+    std::shared_ptr<Board> pBoard = gameState.getBoardState();
+    std::shared_ptr<Piece> pPiece = gameState.getPieceState();
 
     // clear the window with black color
     pWindow->clear(sf::Color::White);
@@ -61,10 +61,10 @@ void Renderer::render(GameState gameState)
 
 
     //Draw active piece
-    drawPiece(piece);
+    drawPiece(pPiece);
 
     //Draw board pieces
-    drawBoard(board);
+    drawBoard(pBoard);
 
     // end the current frame
     pWindow->display();
@@ -126,10 +126,10 @@ void Renderer::drawTile(Tile tile)
     pWindow->draw(tileRender);
 }
 
-void Renderer::drawPiece(Piece piece)
+void Renderer::drawPiece(std::shared_ptr<Piece> piece)
 {
 
-    std::array<Tile, TILES_PER_PIECE> tiles = piece.getTiles();
+    std::array<Tile, TILES_PER_PIECE> tiles = piece->getTiles();
 
     for (auto& tile: tiles)
     {
@@ -138,9 +138,9 @@ void Renderer::drawPiece(Piece piece)
 
 }
 
-void Renderer::drawBoard(Board board)
+void Renderer::drawBoard(std::shared_ptr<Board> board)
 {
-    for (auto& rowOfTiles: board.getTiles())
+    for (auto& rowOfTiles: board->getTiles())
     {
         for (auto& tile: rowOfTiles)
         {

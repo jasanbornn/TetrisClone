@@ -20,9 +20,9 @@ public:
 
     void render(GameState gameState);
 
-    void drawPiece(Piece piece);
+    void drawPiece(std::shared_ptr<Piece> piece);
 
-    void drawBoard(Board board);
+    void drawBoard(std::shared_ptr<Board> board);
 };
 
 

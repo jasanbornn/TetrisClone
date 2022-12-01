@@ -17,6 +17,8 @@ class Updater
 
     sf::RenderWindow* pWindow;
     GameState gameState;
+    std::shared_ptr<Board> pBoard = nullptr;
+    std::shared_ptr<Piece> pPiece = nullptr;
 
 public:
 
@@ -24,7 +26,7 @@ public:
 
     GameState update(const Input& input);
 
-    bool pieceCanMove(Piece piece, int dRow, int dCol);
+    bool pieceCanMove(const std::shared_ptr<Piece>& piece, int dRow, int dCol);
 };
 
 

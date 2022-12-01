@@ -31,6 +31,7 @@ public:
 
     void setRow(int row);
     void setCol(int col);
+    void setPos(int row, int col);
 
     void move(int dRow, int dCol);
 };

@@ -43,6 +43,12 @@ void Tile::setCol(int c)
     this->col = c;
 }
 
+void Tile::setPos(int r, int c)
+{
+    this->row = r;
+    this->col = c;
+}
+
 void Tile::move(int dRow, int dCol)
 {
     this->row += dRow;

@@ -4,43 +4,41 @@
 
 #include "GameState.h"
 
+#include <utility>
+
 
 GameState::GameState()
 {
-    this->board = Board();
-    this->piece = TPiece(20, 4);
+    this->pBoard = std::make_shared<Board>();
+    this->pPiece = std::make_shared<TPiece>(25,5);
 
-//    Piece p = TPiece(30, 5);
-//
-//    board.addPiece(p);
-//    board.addTile(Tile(TILE_RED, 35, 5));
 }
 
-GameState::GameState(Board board, Piece piece)
+GameState::GameState(std::shared_ptr<Board> pBoard, std::shared_ptr<Piece> pPiece)
 {
-    this->board = board;
-    this->piece = piece;
+    this->pBoard = std::move(pBoard);
+    this->pPiece = std::move(pPiece);
 
 };
 
-void GameState::setBoardState(Board newBoard)
+void GameState::setBoardState(std::shared_ptr<Board> b)
 {
-    this->board = newBoard;
+    this->pBoard = std::move(b);
 }
 
-Board GameState::getBoardState()
+std::shared_ptr<Board> GameState::getBoardState()
 {
-    return this->board;
+    return this->pBoard;
 }
 
-void GameState::setPieceState(Piece newPiece)
+void GameState::setPieceState(std::shared_ptr<Piece> p)
 {
-    this->piece = newPiece;
+    this->pPiece = std::move(p);
 }
 
-Piece GameState::getPieceState()
+std::shared_ptr<Piece> GameState::getPieceState()
 {
-    return this->piece;
+    return this->pPiece;
 }
 
 

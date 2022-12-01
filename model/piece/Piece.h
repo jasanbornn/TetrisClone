@@ -37,6 +37,9 @@ public:
 
     void moveRight();
 
+    virtual void rotateLeft();
+    virtual void rotateRight();
+
 //    bool canMoveTo(int dRow, int dCol);
 
 

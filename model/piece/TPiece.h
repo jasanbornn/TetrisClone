@@ -12,6 +12,9 @@ class TPiece : public Piece
 {
 public:
     TPiece(int row, int col);
+
+    void rotateLeft() override;
+    void rotateRight() override;
 };
 
 
