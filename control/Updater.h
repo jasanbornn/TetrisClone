@@ -8,7 +8,7 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include "../input/Input.h"
-#include "../model/board/Board.h"
+#include "../model/Board.h"
 #include "../model/piece/Piece.h"
 #include "GameState.h"
 
@@ -27,6 +27,8 @@ public:
     GameState update(const Input& input);
 
     bool pieceCanMove(const std::shared_ptr<Piece>& piece, int dRow, int dCol);
+
+    void placePiece(std::shared_ptr<Board> board, std::shared_ptr<Piece> piece);
 };
 
 

@@ -7,8 +7,8 @@
 
 #include <vector>
 #include <array>
-#include "../piece/Tile.h"
-#include "../piece/Piece.h"
+#include "piece/Tile.h"
+#include "piece/Piece.h"
 
 #define BOARD_HEIGHT 40
 #define BOARD_WIDTH 10

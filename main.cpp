@@ -3,10 +3,13 @@
 #include "render/Renderer.h"
 #include "control/Updater.h"
 #include "WindowConstants.h"
-#include "model/piece/OPiece.h"
 
 int main()
 {
+    //Seed randomizer
+    unsigned seed = time(nullptr);
+    srand(seed);
+
     // create the window
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "My window");
 

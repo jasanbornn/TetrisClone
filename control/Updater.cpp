@@ -72,6 +72,11 @@ GameState Updater::update(const Input& input)
                     pPiece->rotateRight();
                 }
 
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+                {
+                    placePiece(pBoard,pPiece);
+                }
+
                 break;
             case sf::Event::KeyReleased:
                 break;
@@ -112,8 +117,8 @@ GameState Updater::update(const Input& input)
         }
     }
 
-    gameState.setBoardState(pBoard);
-    gameState.setPieceState(pPiece);
+//    gameState.setBoardState(pBoard);
+//    gameState.setPieceState(pPiece);
 
     return gameState;
 
@@ -142,4 +147,15 @@ bool Updater::pieceCanMove(const std::shared_ptr<Piece>& piece, int dRow, int dC
 
     }
     return true;
+}
+
+void Updater::placePiece(std::shared_ptr<Board> board,std::shared_ptr<Piece> piece)
+{
+    for (Tile& tile: piece->getTiles())
+    {
+        board->addTile(tile);
+    }
+
+    gameState.setBoardState(board);
+    gameState.newPieceState();
 }

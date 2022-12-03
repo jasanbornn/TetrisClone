@@ -6,7 +6,7 @@
 #define TETRISCLONE_GAMESTATE_H
 
 
-#include "../model/board/Board.h"
+#include "../model/Board.h"
 #include "../model/piece/Piece.h"
 #include "../model/piece/OPiece.h"
 #include "../model/piece/LPiece.h"
@@ -15,13 +15,16 @@
 #include "../model/piece/IPiece.h"
 #include "../model/piece/SPiece.h"
 #include "../model/piece/ZPiece.h"
+#include "../model/Bag.h"
 
 #include <memory>
 
 class GameState
 {
-//    Board* pBoard;
-//    Piece* pPiece;
+//    Board board;
+//    Piece piece;
+
+    Bag bag;
 
     std::shared_ptr<Board> pBoard;
     std::shared_ptr<Piece> pPiece;
@@ -32,10 +35,12 @@ public:
     GameState(std::shared_ptr<Board> pBoard, std::shared_ptr<Piece> pPiece);
 
     void setBoardState(std::shared_ptr<Board> pBoard);
+    void setBoardState(Board board);
 
     std::shared_ptr<Board> getBoardState();
 
     void setPieceState(std::shared_ptr<Piece> pPiece);
+    void newPieceState();
 
     std::shared_ptr<Piece> getPieceState();
 };

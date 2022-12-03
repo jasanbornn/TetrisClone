@@ -10,8 +10,9 @@
 
 GameState::GameState()
 {
+    this->bag = Bag();
     this->pBoard = std::make_shared<Board>();
-    this->pPiece = std::make_shared<ZPiece>(25,5);
+    this->pPiece = bag.getPiece();
 
 }
 
@@ -41,5 +42,12 @@ std::shared_ptr<Piece> GameState::getPieceState()
 {
     return this->pPiece;
 }
+
+void GameState::newPieceState()
+{
+    this->pPiece = bag.getPiece();
+}
+
+
 
 

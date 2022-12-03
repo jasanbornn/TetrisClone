@@ -30,12 +30,13 @@ void Renderer::render(GameState gameState)
     sf::RectangleShape leftBorder(sf::Vector2f(2.f, WINDOW_HEIGHT));
     leftBorder.setPosition(WINDOW_WIDTH / 2.f - BOARD_RENDER_WIDTH / 2, 0.f);
     leftBorder.setFillColor(sf::Color::Red);
-
+    pWindow->draw(leftBorder);
 
     //Right border
     sf::RectangleShape rightBorder(sf::Vector2f(2.f, WINDOW_HEIGHT));
     rightBorder.setPosition(WINDOW_WIDTH / 2.f + BOARD_RENDER_WIDTH / 2, 0.f);
     rightBorder.setFillColor(sf::Color::Red);
+    pWindow->draw(rightBorder);
 
     //Draw vertical grid lines
     for (int i = 0; i < BOARD_WIDTH; i++)
@@ -54,11 +55,6 @@ void Renderer::render(GameState gameState)
         gridLine.setFillColor(sf::Color(0x99, 0x99, 0x99));
         pWindow->draw(gridLine);
     }
-
-
-    pWindow->draw(leftBorder);
-    pWindow->draw(rightBorder);
-
 
     //Draw active piece
     drawPiece(pPiece);
