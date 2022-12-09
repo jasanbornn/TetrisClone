@@ -13,6 +13,14 @@
 #define ROT_TWO 2
 #define ROT_LEFT 3
 
+#define I_PIECE 0
+#define J_PIECE 1
+#define L_PIECE 2
+#define S_PIECE 3
+#define Z_PIECE 4
+#define T_PIECE 5
+#define O_PIECE 6
+
 #include <array>
 #include "Tile.h"
 
@@ -22,7 +30,7 @@ class Piece
 
 protected:
 
-    int rotation;
+    int rotation, type;
     std::array<Tile, TILES_PER_PIECE> tiles;
 
 public:
@@ -30,11 +38,14 @@ public:
     Piece(int xPos, int yPos);
 
     std::array<Tile, TILES_PER_PIECE>& getTiles();
+    int getRotation() const;
+    int getType() const;
 
+    void move(int dRow, int dCol);
+
+    void moveUp();
     void moveDown();
-
     void moveLeft();
-
     void moveRight();
 
     virtual void rotateLeft();

@@ -98,7 +98,7 @@ void Renderer::drawTile(Tile tile)
             tileRender.setFillColor(sf::Color::Green);
             break;
         case TILE_ORANGE:
-            tileRender.setFillColor(sf::Color::Black);
+            tileRender.setFillColor(sf::Color(0xff9b00ff));
             break;
         case TILE_PURPLE:
             tileRender.setFillColor(sf::Color::Magenta);

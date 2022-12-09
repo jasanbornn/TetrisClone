@@ -19,6 +19,8 @@ LPiece::LPiece(int row, int col) : Piece(row,col)
     tiles[1] = Tile(TILE_ORANGE, row, col - 1);
     tiles[2] = Tile(TILE_ORANGE, row, col + 1);
     tiles[3] = Tile(TILE_ORANGE, row - 1, col + 1);
+
+    type = L_PIECE;
 }
 
 void LPiece::rotateLeft()

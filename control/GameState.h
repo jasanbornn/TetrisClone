@@ -28,6 +28,10 @@ class GameState
 
     std::shared_ptr<Board> pBoard;
     std::shared_ptr<Piece> pPiece;
+
+    void tryRotateIPieceLeft();
+    void tryRotateIPieceRight();
+
 public:
 
     GameState();
@@ -43,6 +47,22 @@ public:
     void newPieceState();
 
     std::shared_ptr<Piece> getPieceState();
+
+    bool pieceCanMove(int dRow, int dCol);
+
+    void movePieceLeft();
+    void movePieceRight();
+    void movePieceUp();
+    void movePieceDown();
+
+    void placePiece();
+    void dropPiece();
+
+    bool pieceCollides();
+
+    void tryRotatePieceLeft();
+    void tryRotatePieceRight();
+
 };
 
 

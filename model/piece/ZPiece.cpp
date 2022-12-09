@@ -17,6 +17,8 @@ ZPiece::ZPiece(int row, int col) : Piece(row,col)
     tiles[1] = Tile(TILE_RED, row, col + 1);
     tiles[2] = Tile(TILE_RED, row - 1, col);
     tiles[3] = Tile(TILE_RED, row - 1, col - 1);
+
+    type = Z_PIECE;
 }
 
 void ZPiece::rotateLeft()

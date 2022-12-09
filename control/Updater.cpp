@@ -11,8 +11,6 @@ Updater::Updater(sf::RenderWindow* pWindow) : gameState()
 
 GameState Updater::update(const Input& input)
 {
-    pBoard = this->gameState.getBoardState();
-    pPiece = this->gameState.getPieceState();
 
     std::vector<sf::Event> events = input.getEvents();
 
@@ -40,41 +38,41 @@ GameState Updater::update(const Input& input)
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
                 {
-                    if (pieceCanMove(pPiece, 1, 0))
+                    if (gameState.pieceCanMove(1,0))
                     {
-                        pPiece->moveDown();
+                        gameState.movePieceDown();
                     }
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
                 {
-                    if (pieceCanMove(pPiece, 0, -1))
+                    if (gameState.pieceCanMove(0,-1))
                     {
-                        pPiece->moveLeft();
+                        gameState.movePieceLeft();
                     }
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
                 {
-                    if (pieceCanMove(pPiece, 0, 1))
+                    if (gameState.pieceCanMove(0,1))
                     {
-                        pPiece->moveRight();
+                        gameState.movePieceRight();
                     }
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
                 {
-                    pPiece->rotateLeft();
+                    gameState.tryRotatePieceLeft();
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
                 {
-                    pPiece->rotateRight();
+                    gameState.tryRotatePieceRight();
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
                 {
-                    placePiece(pBoard,pPiece);
+                    gameState.dropPiece();
                 }
 
                 break;
@@ -124,38 +122,3 @@ GameState Updater::update(const Input& input)
 
 }
 
-bool Updater::pieceCanMove(const std::shared_ptr<Piece>& piece, int dRow, int dCol)
-{
-    std::array<Tile, TILES_PER_PIECE> pieceTiles = piece->getTiles();
-    std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> boardTiles = this->gameState.getBoardState()->getTiles();
-    for (int i = 0; i < TILES_PER_PIECE; i++)
-    {
-        if (pieceTiles[i].getCol() + dCol > BOARD_WIDTH - 1 || pieceTiles[i].getCol() + dCol < 0)
-        {
-            return false;
-        }
-
-        if (pieceTiles[i].getRow() + dRow > BOARD_HEIGHT - 1 || pieceTiles[i].getRow() + dRow < 0)
-        {
-            return false;
-        }
-
-        if (boardTiles[pieceTiles[i].getRow() + dRow][pieceTiles[i].getCol() + dCol].getTileType() != TILE_NULL)
-        {
-            return false;
-        }
-
-    }
-    return true;
-}
-
-void Updater::placePiece(std::shared_ptr<Board> board,std::shared_ptr<Piece> piece)
-{
-    for (Tile& tile: piece->getTiles())
-    {
-        board->addTile(tile);
-    }
-
-    gameState.setBoardState(board);
-    gameState.newPieceState();
-}

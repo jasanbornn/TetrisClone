@@ -18,6 +18,8 @@ SPiece::SPiece(int row, int col) : Piece(row,col)
     tiles[1] = Tile(TILE_GREEN, row, col - 1);
     tiles[2] = Tile(TILE_GREEN, row - 1, col);
     tiles[3] = Tile(TILE_GREEN, row - 1, col + 1);
+
+    type = S_PIECE;
 }
 
 void SPiece::rotateLeft()

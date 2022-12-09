@@ -10,4 +10,6 @@ OPiece::OPiece(int row, int col) : Piece(row, col)
     tiles[1] = Tile(TILE_YELLOW, row, col + 1);
     tiles[2] = Tile(TILE_YELLOW, row + 1, col);
     tiles[3] = Tile(TILE_YELLOW, row + 1, col + 1);
+
+    type = O_PIECE;
 }
