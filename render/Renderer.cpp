@@ -19,6 +19,7 @@ void Renderer::render(GameState gameState)
 {
     std::shared_ptr<Board> pBoard = gameState.getBoardState();
     std::shared_ptr<Piece> pPiece = gameState.getPieceState();
+    std::shared_ptr<GhostPiece> pGhostPiece = gameState.getGhostPieceState();
 
     // clear the window with black color
     pWindow->clear(sf::Color::White);
@@ -56,17 +57,25 @@ void Renderer::render(GameState gameState)
         pWindow->draw(gridLine);
     }
 
-    //Draw active piece
-    drawPiece(pPiece);
-
     //Draw board pieces
     drawBoard(pBoard);
+
+    //Draw ghost piece
+    drawGhostPiece(pGhostPiece);
+
+    //Draw active piece
+    drawPiece(pPiece);
 
     // end the current frame
     pWindow->display();
 }
 
 void Renderer::drawTile(Tile tile)
+{
+    drawTile(tile,false);
+}
+
+void Renderer::drawTile(Tile tile,bool isGhost)
 {
     int row = tile.getRow();
     int col = tile.getCol();
@@ -82,38 +91,45 @@ void Renderer::drawTile(Tile tile)
     tileRender.setPosition((WINDOW_WIDTH / 2.f - BOARD_RENDER_WIDTH / 2.f) + TILE_RENDER_WIDTH * col,
                            TILE_RENDER_WIDTH * (row - BOARD_HEIGHT / 2.f));
 
-
-    switch(tileType)
+    if(isGhost)
     {
-        case TILE_NULL:
-            tileRender.setFillColor(sf::Color::Transparent);
-            break;
-        case TILE_BLUE:
-            tileRender.setFillColor(sf::Color::Blue);
-            break;
-        case TILE_CYAN:
-            tileRender.setFillColor(sf::Color::Cyan);
-            break;
-        case TILE_GREEN:
-            tileRender.setFillColor(sf::Color::Green);
-            break;
-        case TILE_ORANGE:
-            tileRender.setFillColor(sf::Color(0xff9b00ff));
-            break;
-        case TILE_PURPLE:
-            tileRender.setFillColor(sf::Color::Magenta);
-            break;
-        case TILE_RED:
-            tileRender.setFillColor(sf::Color::Red);
-            break;
-        case TILE_YELLOW:
-            tileRender.setFillColor(sf::Color::Yellow);
-            break;
-        default:
-            tileRender.setFillColor(sf::Color::Transparent);
+        tileRender.setFillColor(sf::Color(0xcccccccc));
+    }
+    else
+    {
+        switch (tileType)
+        {
+            case TILE_NULL:
+                tileRender.setFillColor(sf::Color::Transparent);
+                break;
+            case TILE_BLUE:
+                tileRender.setFillColor(sf::Color::Blue);
+                break;
+            case TILE_CYAN:
+                tileRender.setFillColor(sf::Color::Cyan);
+                break;
+            case TILE_GREEN:
+                tileRender.setFillColor(sf::Color::Green);
+                break;
+            case TILE_ORANGE:
+                tileRender.setFillColor(sf::Color(0xff9b00ff));
+                break;
+            case TILE_PURPLE:
+                tileRender.setFillColor(sf::Color::Magenta);
+                break;
+            case TILE_RED:
+                tileRender.setFillColor(sf::Color::Red);
+                break;
+            case TILE_YELLOW:
+                tileRender.setFillColor(sf::Color::Yellow);
+                break;
+            default:
+                tileRender.setFillColor(sf::Color::Transparent);
+        }
     }
 
-    if(tileType != TILE_NULL)
+
+    if (tileType != TILE_NULL)
     {
         tileRender.setOutlineThickness(1.f);
         tileRender.setOutlineColor(sf::Color(0x999999));
@@ -142,6 +158,16 @@ void Renderer::drawBoard(std::shared_ptr<Board> board)
         {
             drawTile(tile);
         }
+    }
+}
+
+void Renderer::drawGhostPiece(const std::shared_ptr<GhostPiece>& pGhostPiece)
+{
+    std::array<Tile, TILES_PER_PIECE> tiles = pGhostPiece->getTiles();
+
+    for (auto& tile: tiles)
+    {
+        drawTile(tile,true);
     }
 }
 

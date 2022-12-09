@@ -118,6 +118,8 @@ GameState Updater::update(const Input& input)
 //    gameState.setBoardState(pBoard);
 //    gameState.setPieceState(pPiece);
 
+    gameState.updateGhostPiece();
+
     return gameState;
 
 }

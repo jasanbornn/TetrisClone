@@ -14,15 +14,18 @@ class Renderer
     sf::RenderWindow* pWindow;
 
     void drawTile(Tile tile);
+    void drawTile(Tile tile, bool isGhost);
 
 public:
     explicit Renderer(sf::RenderWindow* pWindow);
 
     void render(GameState gameState);
 
-    void drawPiece(std::shared_ptr<Piece> piece);
-
     void drawBoard(std::shared_ptr<Board> board);
+    void drawPiece(std::shared_ptr<Piece> piece);
+    void drawGhostPiece(const std::shared_ptr<GhostPiece>& ghostPiece);
+
+
 };
 
 

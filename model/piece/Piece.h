@@ -13,6 +13,7 @@
 #define ROT_TWO 2
 #define ROT_LEFT 3
 
+#define NULL_PIECE (-1)
 #define I_PIECE 0
 #define J_PIECE 1
 #define L_PIECE 2
@@ -42,11 +43,6 @@ public:
     int getType() const;
 
     void move(int dRow, int dCol);
-
-    void moveUp();
-    void moveDown();
-    void moveLeft();
-    void moveRight();
 
     virtual void rotateLeft();
     virtual void rotateRight();

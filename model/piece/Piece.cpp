@@ -20,26 +20,6 @@ void Piece::move(int dRow, int dCol)
     }
 }
 
-void Piece::moveUp()
-{
-    this->move(-1,0);
-}
-
-void Piece::moveDown()
-{
-    this->move(1, 0);
-}
-
-void Piece::moveLeft()
-{
-    this->move(0, -1);
-}
-
-void Piece::moveRight()
-{
-    this->move(0, 1);
-}
-
 std::array<Tile, TILES_PER_PIECE>& Piece::getTiles()
 {
     return this->tiles;

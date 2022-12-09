@@ -54,3 +54,8 @@ void Tile::move(int dRow, int dCol)
     this->row += dRow;
     this->col += dCol;
 }
+
+void Tile::setTileType(int t)
+{
+    this->tileType = t;
+}

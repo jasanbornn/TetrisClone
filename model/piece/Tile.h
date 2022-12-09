@@ -6,13 +6,14 @@
 #define TETRISCLONE_TILE_H
 
 #define TILE_NULL 0
-#define TILE_CYAN 1
-#define TILE_YELLOW 2
-#define TILE_PURPLE 3
-#define TILE_GREEN 4
-#define TILE_RED 5
-#define TILE_BLUE 6
-#define TILE_ORANGE 7
+#define TILE_GHOST 1
+#define TILE_CYAN 2
+#define TILE_YELLOW 3
+#define TILE_PURPLE 4
+#define TILE_GREEN 5
+#define TILE_RED 6
+#define TILE_BLUE 7
+#define TILE_ORANGE 8
 
 
 class Tile
@@ -32,6 +33,7 @@ public:
     void setRow(int row);
     void setCol(int col);
     void setPos(int row, int col);
+    void setTileType(int tileType);
 
     void move(int dRow, int dCol);
 };

@@ -8,20 +8,12 @@
 #include <utility>
 
 
-GameState::GameState()
+GameState::GameState() : bag()
 {
-    this->bag = Bag();
     this->pBoard = std::make_shared<Board>();
     this->pPiece = bag.getPiece();
-
+    this->pGhostPiece = std::make_shared<GhostPiece>();
 }
-
-GameState::GameState(std::shared_ptr<Board> pBoard, std::shared_ptr<Piece> pPiece)
-{
-    this->pBoard = std::move(pBoard);
-    this->pPiece = std::move(pPiece);
-
-};
 
 void GameState::setBoardState(std::shared_ptr<Board> b)
 {
@@ -41,6 +33,11 @@ void GameState::setPieceState(std::shared_ptr<Piece> p)
 std::shared_ptr<Piece> GameState::getPieceState()
 {
     return this->pPiece;
+}
+
+std::shared_ptr<GhostPiece> GameState::getGhostPieceState()
+{
+    return this->pGhostPiece;
 }
 
 void GameState::newPieceState()
@@ -75,22 +72,22 @@ bool GameState::pieceCanMove(int dRow, int dCol)
 
 void GameState::movePieceLeft()
 {
-    pPiece->moveLeft();
+    pPiece->move(0, -1);
 }
 
 void GameState::movePieceRight()
 {
-    pPiece->moveRight();
+    pPiece->move(0, 1);
 }
 
 void GameState::movePieceUp()
 {
-    pPiece->moveUp();
+    pPiece->move(-1, 0);
 }
 
 void GameState::movePieceDown()
 {
-    pPiece->moveDown();
+    pPiece->move(1, 0);
 }
 
 bool GameState::pieceCollides()
@@ -120,7 +117,7 @@ void GameState::placePiece()
 
 void GameState::dropPiece()
 {
-    while(!pieceCollides())
+    while (!pieceCollides())
     {
         movePieceDown();
     }
@@ -128,6 +125,19 @@ void GameState::dropPiece()
     placePiece();
 }
 
+void GameState::updateGhostPiece()
+{
+    int dRow = 0;
+
+    while (!pieceCollides())
+    {
+        pPiece->move(1, 0);
+        dRow++;
+    }
+    pPiece->move(-1, 0);
+    pGhostPiece->update(pPiece->getTiles());
+    pPiece->move(-dRow + 1, 0);
+}
 
 
 void GameState::tryRotatePieceLeft()
