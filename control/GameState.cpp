@@ -113,6 +113,7 @@ void GameState::placePiece()
         pBoard->addTile(tile);
     }
     newPieceState();
+    pBoard->clearLines();
 }
 
 void GameState::dropPiece()

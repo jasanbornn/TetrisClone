@@ -24,9 +24,6 @@ void Renderer::render(GameState gameState)
     // clear the window with black color
     pWindow->clear(sf::Color::White);
 
-    // draw everything here...
-    // window.draw(...);
-
     //Left border
     sf::RectangleShape leftBorder(sf::Vector2f(2.f, WINDOW_HEIGHT));
     leftBorder.setPosition(WINDOW_WIDTH / 2.f - BOARD_RENDER_WIDTH / 2, 0.f);
@@ -57,14 +54,16 @@ void Renderer::render(GameState gameState)
         pWindow->draw(gridLine);
     }
 
-    //Draw board pieces
-    drawBoard(pBoard);
+
 
     //Draw ghost piece
     drawGhostPiece(pGhostPiece);
 
     //Draw active piece
     drawPiece(pPiece);
+
+    //Draw board pieces
+    drawBoard(pBoard);
 
     // end the current frame
     pWindow->display();
@@ -138,7 +137,7 @@ void Renderer::drawTile(Tile tile,bool isGhost)
     pWindow->draw(tileRender);
 }
 
-void Renderer::drawPiece(std::shared_ptr<Piece> piece)
+void Renderer::drawPiece(const std::shared_ptr<Piece>& piece)
 {
 
     std::array<Tile, TILES_PER_PIECE> tiles = piece->getTiles();
@@ -150,7 +149,7 @@ void Renderer::drawPiece(std::shared_ptr<Piece> piece)
 
 }
 
-void Renderer::drawBoard(std::shared_ptr<Board> board)
+void Renderer::drawBoard(const std::shared_ptr<Board>& board)
 {
     for (auto& rowOfTiles: board->getTiles())
     {
@@ -170,17 +169,3 @@ void Renderer::drawGhostPiece(const std::shared_ptr<GhostPiece>& pGhostPiece)
         drawTile(tile,true);
     }
 }
-
-
-
-
-//    std::array<std::array<int,BOARD_WIDTH>,BOARD_HEIGHT> pieceData = piece.getData();
-//
-//    for (int row = BOARD_HEIGHT/2; row < BOARD_HEIGHT; row++)
-//    {
-//        for (int col = 0; col < BOARD_WIDTH; col++)
-//        {
-//            drawTile(pieceData.at(row).at(col),row,col);
-//        }
-//    }
-//}

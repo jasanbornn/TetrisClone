@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <array>
-#include "piece/Tile.h"
+#include "Tile.h"
 #include "piece/Piece.h"
 
 #define BOARD_HEIGHT 40
@@ -33,6 +33,8 @@ public:
     std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> getTiles();
 
     void addPiece(Piece piece);
+
+    void clearLines();
 };
 
 

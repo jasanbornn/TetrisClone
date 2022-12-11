@@ -40,8 +40,38 @@ std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> Board::getTiles()
 
 void Board::addPiece(Piece piece)
 {
-    for(auto& tile : piece.getTiles())
+    for (auto& tile: piece.getTiles())
     {
         addTile(tile);
+    }
+}
+
+void Board::clearLines()
+{
+    for (int row = 0; row < BOARD_HEIGHT; row++)
+    {
+        bool allFull = true;
+        for (int col = 0; col < BOARD_WIDTH; col++)
+        {
+            if (tiles[row][col].getTileType() == TILE_NULL || tiles[row][col].getTileType() == TILE_GHOST)
+            {
+                allFull = false;
+            }
+        }
+        if (allFull)
+        {
+            for (int i = 0; i < row - 1; i++)
+            {
+                tiles[row - i] = tiles[row - i - 1];
+            }
+        }
+    }
+
+    for (int row = 0; row < BOARD_HEIGHT; row++)
+    {
+        for (int col = 0; col < BOARD_WIDTH; col++)
+        {
+            tiles[row][col].setPos(row,col);
+        }
     }
 }

@@ -21,8 +21,8 @@ public:
 
     void render(GameState gameState);
 
-    void drawBoard(std::shared_ptr<Board> board);
-    void drawPiece(std::shared_ptr<Piece> piece);
+    void drawBoard(const std::shared_ptr<Board>& board);
+    void drawPiece(const std::shared_ptr<Piece>& piece);
     void drawGhostPiece(const std::shared_ptr<GhostPiece>& ghostPiece);
 
 

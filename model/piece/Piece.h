@@ -23,7 +23,7 @@
 #define O_PIECE 6
 
 #include <array>
-#include "Tile.h"
+#include "../Tile.h"
 
 
 class Piece
