@@ -17,6 +17,7 @@
 #include "../model/piece/ZPiece.h"
 #include "../model/Bag.h"
 #include "GhostPiece.h"
+#include "../model/Holder.h"
 
 #include <memory>
 
@@ -26,11 +27,13 @@ class GameState
 //    Piece piece;
 
     Bag bag;
-//    GhostPiece ghostPiece;
 
     std::shared_ptr<GhostPiece> pGhostPiece;
     std::shared_ptr<Board> pBoard;
     std::shared_ptr<Piece> pPiece;
+    std::shared_ptr<Holder> pHolder;
+
+    bool canHoldPiece;
 
     void tryRotateIPieceLeft();
     void tryRotateIPieceRight();
@@ -45,9 +48,10 @@ public:
     std::shared_ptr<Board> getBoardState();
     std::shared_ptr<Piece> getPieceState();
     std::shared_ptr<GhostPiece> getGhostPieceState();
+    std::shared_ptr<Holder> getHolderState();
 
     void setPieceState(std::shared_ptr<Piece> pPiece);
-    void newPieceState();
+    void spawnNewPiece();
 
     bool pieceCanMove(int dRow, int dCol);
 
@@ -65,6 +69,8 @@ public:
     void tryRotatePieceRight();
 
     void updateGhostPiece();
+
+    void holdPiece();
 
 };
 

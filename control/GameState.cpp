@@ -13,6 +13,9 @@ GameState::GameState() : bag()
     this->pBoard = std::make_shared<Board>();
     this->pPiece = bag.getPiece();
     this->pGhostPiece = std::make_shared<GhostPiece>();
+    this->pHolder = std::make_shared<Holder>();
+
+    this->canHoldPiece = true;
 }
 
 void GameState::setBoardState(std::shared_ptr<Board> b)
@@ -40,9 +43,15 @@ std::shared_ptr<GhostPiece> GameState::getGhostPieceState()
     return this->pGhostPiece;
 }
 
-void GameState::newPieceState()
+std::shared_ptr<Holder> GameState::getHolderState()
+{
+    return this->pHolder;
+}
+
+void GameState::spawnNewPiece()
 {
     this->pPiece = bag.getPiece();
+    canHoldPiece = true;
 }
 
 bool GameState::pieceCanMove(int dRow, int dCol)
@@ -112,7 +121,7 @@ void GameState::placePiece()
     {
         pBoard->addTile(tile);
     }
-    newPieceState();
+    spawnNewPiece();
     pBoard->clearLines();
 }
 
@@ -138,6 +147,21 @@ void GameState::updateGhostPiece()
     pPiece->move(-1, 0);
     pGhostPiece->update(pPiece->getTiles());
     pPiece->move(-dRow + 1, 0);
+}
+
+void GameState::holdPiece()
+{
+    if (canHoldPiece)
+    {
+        pPiece = pHolder->hold(pPiece);
+
+        if (pPiece == nullptr)
+        {
+            spawnNewPiece();
+        }
+
+        canHoldPiece = false;
+    }
 }
 
 

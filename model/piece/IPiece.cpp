@@ -97,3 +97,18 @@ void IPiece::rotateRight()
             break;
     }
 }
+
+void IPiece::setPos(int row, int col)
+{
+    Piece::setPos(row, col);
+    tiles[0] = Tile(TILE_CYAN, row, col);
+    tiles[1] = Tile(TILE_CYAN, row, col - 1);
+    tiles[2] = Tile(TILE_CYAN, row, col + 1);
+    tiles[3] = Tile(TILE_CYAN, row, col + 2);
+}
+
+void IPiece::resetTiles()
+{
+    Piece::resetTiles();
+    setPos(20,4);
+}

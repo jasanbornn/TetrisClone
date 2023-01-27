@@ -20,10 +20,32 @@ void Renderer::render(GameState gameState)
     std::shared_ptr<Board> pBoard = gameState.getBoardState();
     std::shared_ptr<Piece> pPiece = gameState.getPieceState();
     std::shared_ptr<GhostPiece> pGhostPiece = gameState.getGhostPieceState();
+    std::shared_ptr<Holder> pHolder = gameState.getHolderState();
 
-    // clear the window with black color
+    //Clear the window with white color
     pWindow->clear(sf::Color::White);
 
+    //Draw background
+    drawBackground();
+
+    //Draw ghost piece
+    drawGhostPiece(pGhostPiece);
+
+    //Draw active piece
+    drawPiece(pPiece);
+
+    //Draw board pieces
+    drawBoard(pBoard);
+
+    //Draw held piece
+    drawHeldPiece(pHolder);
+
+    //End the current frame
+    pWindow->display();
+}
+
+void Renderer::drawBackground()
+{
     //Left border
     sf::RectangleShape leftBorder(sf::Vector2f(2.f, WINDOW_HEIGHT));
     leftBorder.setPosition(WINDOW_WIDTH / 2.f - BOARD_RENDER_WIDTH / 2, 0.f);
@@ -53,44 +75,39 @@ void Renderer::render(GameState gameState)
         gridLine.setFillColor(sf::Color(0x99, 0x99, 0x99));
         pWindow->draw(gridLine);
     }
-
-
-
-    //Draw ghost piece
-    drawGhostPiece(pGhostPiece);
-
-    //Draw active piece
-    drawPiece(pPiece);
-
-    //Draw board pieces
-    drawBoard(pBoard);
-
-    // end the current frame
-    pWindow->display();
 }
 
 void Renderer::drawTile(Tile tile)
 {
-    drawTile(tile,false);
+    drawTile(tile, false);
 }
 
-void Renderer::drawTile(Tile tile,bool isGhost)
+void Renderer::drawTile(Tile tile, bool isGhost)
+{
+    drawTile(tile, isGhost, false);
+}
+
+void Renderer::drawTile(Tile tile, bool isGhost, bool override)
 {
     int row = tile.getRow();
     int col = tile.getCol();
     int tileType = tile.getTileType();
 
-    if (row >= BOARD_HEIGHT || col >= BOARD_WIDTH || row < 0 || col < 0)
+    if (!override)
     {
-        return;
+        if (row >= BOARD_HEIGHT || col >= BOARD_WIDTH || row < 0 || col < 0)
+        {
+            return;
+        }
     }
+
 
     sf::RectangleShape tileRender(sf::Vector2f(TILE_RENDER_WIDTH, TILE_RENDER_WIDTH));
 
     tileRender.setPosition((WINDOW_WIDTH / 2.f - BOARD_RENDER_WIDTH / 2.f) + TILE_RENDER_WIDTH * col,
                            TILE_RENDER_WIDTH * (row - BOARD_HEIGHT / 2.f));
 
-    if(isGhost)
+    if (isGhost)
     {
         tileRender.setFillColor(sf::Color(0xcccccccc));
     }
@@ -137,16 +154,20 @@ void Renderer::drawTile(Tile tile,bool isGhost)
     pWindow->draw(tileRender);
 }
 
+
 void Renderer::drawPiece(const std::shared_ptr<Piece>& piece)
 {
+    drawPiece(piece, false);
+}
 
+void Renderer::drawPiece(const std::shared_ptr<Piece>& piece, bool override)
+{
     std::array<Tile, TILES_PER_PIECE> tiles = piece->getTiles();
 
     for (auto& tile: tiles)
     {
-        drawTile(tile);
+        drawTile(tile, false, override);
     }
-
 }
 
 void Renderer::drawBoard(const std::shared_ptr<Board>& board)
@@ -166,6 +187,26 @@ void Renderer::drawGhostPiece(const std::shared_ptr<GhostPiece>& pGhostPiece)
 
     for (auto& tile: tiles)
     {
-        drawTile(tile,true);
+        drawTile(tile, true);
+    }
+}
+
+void Renderer::drawHeldPiece(const std::shared_ptr<Holder>& holder)
+{
+    if (holder->getHeldPiece() != nullptr)
+    {
+        drawPiece(holder->getHeldPiece(), true);
+    }
+}
+
+//Draw a piece on a give spot on the screen
+void Renderer::drawUIPiece(const std::shared_ptr<Piece>& piece, float xPos, float yPos)
+{
+    float lowXBound, lowYBound = 0;
+    float highXBound, highYBound = 100000;
+
+    for (Tile& tile: piece->getRelativeTiles())
+    {
+
     }
 }

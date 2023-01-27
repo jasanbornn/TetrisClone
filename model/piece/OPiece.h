@@ -13,6 +13,8 @@ class OPiece : public Piece
 public:
 
     OPiece(int row, int col);
+    void setPos(int row, int col) override;
+    void resetTiles() override;
 };
 
 

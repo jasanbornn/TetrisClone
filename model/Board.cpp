@@ -48,8 +48,11 @@ void Board::addPiece(Piece piece)
 
 void Board::clearLines()
 {
+
+    //Clear lines
     for (int row = 0; row < BOARD_HEIGHT; row++)
     {
+        //Check if row is full
         bool allFull = true;
         for (int col = 0; col < BOARD_WIDTH; col++)
         {
@@ -58,6 +61,7 @@ void Board::clearLines()
                 allFull = false;
             }
         }
+        //If a row is full, remove it and shift all rows above it down
         if (allFull)
         {
             for (int i = 0; i < row - 1; i++)
@@ -67,11 +71,12 @@ void Board::clearLines()
         }
     }
 
+    //Fix tile positions
     for (int row = 0; row < BOARD_HEIGHT; row++)
     {
         for (int col = 0; col < BOARD_WIDTH; col++)
         {
-            tiles[row][col].setPos(row,col);
+            tiles[row][col].setPos(row, col);
         }
     }
 }

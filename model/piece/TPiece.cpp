@@ -89,3 +89,20 @@ void TPiece::rotateRight()
     }
 }
 
+void TPiece::setPos(int row, int col)
+{
+    Piece::setPos(row, col);
+    tiles[0] = Tile(TILE_PURPLE, row, col);
+    tiles[1] = Tile(TILE_PURPLE, row, col - 1);
+    tiles[2] = Tile(TILE_PURPLE, row, col + 1);
+    tiles[3] = Tile(TILE_PURPLE, row - 1, col);
+}
+
+void TPiece::resetTiles()
+{
+    Piece::resetTiles();
+    setPos(21,4);
+}
+
+
+

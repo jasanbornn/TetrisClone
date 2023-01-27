@@ -4,7 +4,7 @@
 
 #include "ZPiece.h"
 
-ZPiece::ZPiece(int row, int col) : Piece(row,col)
+ZPiece::ZPiece(int row, int col) : Piece(row, col)
 {
     /*
      * Tile number map
@@ -44,7 +44,7 @@ void ZPiece::rotateLeft()
             rotation = ROT_RIGHT;
             tiles[1].move(1, 1);
             tiles[2].move(-1, 1);
-            tiles[3].move(-2,0);
+            tiles[3].move(-2, 0);
             break;
         case ROT_RIGHT:
             rotation = ROT_ZERO;
@@ -84,7 +84,24 @@ void ZPiece::rotateRight()
             rotation = ROT_TWO;
             tiles[1].move(-1, -1);
             tiles[2].move(1, -1);
-            tiles[3].move(2,0);
+            tiles[3].move(2, 0);
             break;
     }
 }
+
+void ZPiece::setPos(int row, int col)
+{
+    Piece::setPos(row, col);
+    tiles[0] = Tile(TILE_RED, row, col);
+    tiles[1] = Tile(TILE_RED, row, col + 1);
+    tiles[2] = Tile(TILE_RED, row - 1, col);
+    tiles[3] = Tile(TILE_RED, row - 1, col - 1);
+}
+
+void ZPiece::resetTiles()
+{
+    Piece::resetTiles();
+    setPos(21, 4);
+}
+
+

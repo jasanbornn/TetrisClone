@@ -39,6 +39,7 @@ public:
     Piece(int xPos, int yPos);
 
     std::array<Tile, TILES_PER_PIECE>& getTiles();
+    std::array<Tile, TILES_PER_PIECE> getRelativeTiles();
     int getRotation() const;
     int getType() const;
 
@@ -47,7 +48,8 @@ public:
     virtual void rotateLeft();
     virtual void rotateRight();
 
-//    bool canMoveTo(int dRow, int dCol);
+    virtual void setPos(int row, int col);
+    virtual void resetTiles();
 
 
 };

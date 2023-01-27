@@ -4,7 +4,7 @@
 
 #include "JPiece.h"
 
-JPiece::JPiece(int row, int col) : Piece(row,col)
+JPiece::JPiece(int row, int col) : Piece(row, col)
 {
 
     /*
@@ -90,3 +90,20 @@ void JPiece::rotateRight()
             break;
     }
 }
+
+void JPiece::setPos(int row, int col)
+{
+    Piece::setPos(row, col);
+    tiles[0] = Tile(TILE_BLUE, row, col);
+    tiles[1] = Tile(TILE_BLUE, row, col - 1);
+    tiles[2] = Tile(TILE_BLUE, row, col + 1);
+    tiles[3] = Tile(TILE_BLUE, row - 1, col - 1);
+}
+
+void JPiece::resetTiles()
+{
+    Piece::resetTiles();
+    setPos(21,4);
+}
+
+

@@ -90,3 +90,20 @@ void LPiece::rotateRight()
             break;
     }
 }
+
+void LPiece::setPos(int row, int col)
+{
+    Piece::setPos(row, col);
+    tiles[0] = Tile(TILE_ORANGE, row, col);
+    tiles[1] = Tile(TILE_ORANGE, row, col - 1);
+    tiles[2] = Tile(TILE_ORANGE, row, col + 1);
+    tiles[3] = Tile(TILE_ORANGE, row - 1, col + 1);
+}
+
+
+void LPiece::resetTiles()
+{
+    Piece::resetTiles();
+    setPos(21,4);
+}
+

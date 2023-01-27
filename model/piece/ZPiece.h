@@ -15,6 +15,8 @@ public:
 
     void rotateLeft() override;
     void rotateRight() override;
+    void setPos(int row, int col) override;
+    void resetTiles() override;
 };
 
 #endif //TETRISCLONE_ZPIECE_H

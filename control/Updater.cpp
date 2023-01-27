@@ -75,6 +75,11 @@ GameState Updater::update(const Input& input)
                     gameState.dropPiece();
                 }
 
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+                {
+                    gameState.holdPiece();
+                }
+
                 break;
             case sf::Event::KeyReleased:
                 break;
