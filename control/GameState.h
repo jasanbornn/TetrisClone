@@ -18,14 +18,20 @@
 #include "../model/Bag.h"
 #include "GhostPiece.h"
 #include "../model/Holder.h"
+#include "../input/Input.h"
 
 #include <memory>
+#include <SFML/System/Time.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 class GameState
 {
-//    Board board;
-//    Piece piece;
 
+    sf::RenderWindow* pWindow;
+
+    sf::Clock clock;
+    sf::Time time;
     Bag bag;
 
     std::shared_ptr<GhostPiece> pGhostPiece;
@@ -40,7 +46,11 @@ class GameState
 
 public:
 
-    GameState();
+    explicit GameState(sf::RenderWindow* pWindow);
+
+    void update(Input input);
+
+    void processInputs(const Input& input);
 
     void setBoardState(std::shared_ptr<Board> pBoard);
     void setBoardState(Board board);
