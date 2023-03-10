@@ -6,6 +6,18 @@
 
 
 #include <utility>
+#include <iostream>
+
+#define BUTTON_A 0
+#define BUTTON_B 1
+#define BUTTON_X 2
+#define BUTTON_Y 3
+#define BUTTON_LBUMPER 4
+#define BUTTON_RBUMPER 5
+#define BUTTON_START 7
+#define BUTTON_SELECT 8
+#define LEFT_STICK_BUTTON 9
+#define RIGHT_STICK_BUTTON 10
 
 
 GameState::GameState(sf::RenderWindow* pWindow) : bag()
@@ -44,6 +56,8 @@ void GameState::processInputs(const Input& input)
 {
     std::vector<sf::Event> events = input.getEvents();
 
+
+
     for (int i = 0; i < events.size(); i++)
     {
         switch (events.at(i).type)
@@ -59,6 +73,35 @@ void GameState::processInputs(const Input& input)
 //                break;
 //            case sf::Event::TextEntered:
 //                break;
+
+            case sf::Event::JoystickMoved:
+                //Joystick axis events
+
+                if (sf::Joystick::getAxisPosition(0,sf::Joystick::PovY) > 0)
+                {
+                    if (pieceCanMove(1, 0))
+                    {
+                        movePieceDown();
+                    }
+                    clock.restart();
+                }
+
+                if (sf::Joystick::getAxisPosition(0,sf::Joystick::PovX) < 0)
+                {
+                    if (pieceCanMove(0, -1))
+                    {
+                        movePieceLeft();
+                    }
+                }
+
+                if (sf::Joystick::getAxisPosition(0,sf::Joystick::PovX) > 0)
+                {
+                    if (pieceCanMove(0, 1))
+                    {
+                        movePieceRight();
+                    }
+                }
+                break;
             case sf::Event::KeyPressed:
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
@@ -150,8 +193,54 @@ void GameState::processInputs(const Input& input)
 //                break;
 //            case sf::Event::MouseLeft:
 //                break;
-//            case sf::Event::JoystickButtonPressed:
-//                break;
+            case sf::Event::JoystickButtonPressed:
+//                if (sf::Joystick::isButtonPressed(0,0))
+//                {
+//                    pWindow->close();
+//                }
+
+                if (sf::Joystick::isButtonPressed(0,BUTTON_X))
+                {
+                    if (!pieceCanMove(1, 0))
+                    {
+                        tryRotatePieceLeft();
+                        if (pieceCanMove(1, 0))
+                        {
+                            clock.restart();
+                        }
+                    }
+                    else
+                    {
+                        tryRotatePieceLeft();
+                    }
+                }
+
+                if (sf::Joystick::isButtonPressed(0,BUTTON_Y))
+                {
+                    if (!pieceCanMove(1, 0))
+                    {
+                        tryRotatePieceRight();
+                        if (pieceCanMove(1, 0))
+                        {
+                            clock.restart();
+                        }
+                    }
+                    else
+                    {
+                        tryRotatePieceRight();
+                    }
+                }
+
+                if (sf::Joystick::isButtonPressed(0,BUTTON_A))
+                {
+                    dropPiece();
+                }
+
+                if (sf::Joystick::isButtonPressed(0,BUTTON_B))
+                {
+                    holdPiece();
+                }
+                break;
 //            case sf::Event::JoystickButtonReleased:
 //                break;
 //            case sf::Event::JoystickMoved:
