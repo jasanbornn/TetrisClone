@@ -15,28 +15,26 @@ class Renderer
 
     void drawTile(Tile tile);
 
-    void drawTile(Tile tile, bool isGhost);
+    void drawTile(int tileType, float xPos, float yPos, float scale);
 
-    void drawTile(Tile tile, bool isGhost, bool override);
+    void drawGhostTile(Tile tile);
 
 public:
     explicit Renderer(sf::RenderWindow* pWindow);
 
     void render(GameState gameState);
 
-    void drawBackground();
-
     void drawBoard(const std::shared_ptr<Board>& board);
 
     void drawPiece(const std::shared_ptr<Piece>& piece);
 
-    void drawPiece(const std::shared_ptr<Piece>& piece, bool override);
-
     void drawGhostPiece(const std::shared_ptr<GhostPiece>& ghostPiece);
 
-    void drawUIPiece(const std::shared_ptr<Piece>& piece, float xPos, float yPos);
+    void drawUIPiece(const std::shared_ptr<Piece>& piece, float xPos, float yPos, float scale);
 
-    void drawHeldPiece(const std::shared_ptr<Holder>& holder);
+    void drawPieceHolder(const std::shared_ptr<Holder>& holder);
+
+    void drawMenu(const std::shared_ptr<Menu>& menu);
 
 
 };

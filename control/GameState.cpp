@@ -30,33 +30,34 @@ GameState::GameState(sf::RenderWindow* pWindow) : bag()
     this->pPiece = bag.getPiece();
     this->pGhostPiece = std::make_shared<GhostPiece>();
     this->pHolder = std::make_shared<Holder>();
+    this->pMenu = std::make_shared<Menu>();
 
     this->canHoldPiece = true;
 }
 
 void GameState::update(Input input)
 {
-    time = clock.getElapsedTime();
-    if (time.asSeconds() >= 1.0)
+    if (pMenu->getStatus() == MENU_CLOSED)
     {
-        if (pieceCanMove(1, 0))
+        time = clock.getElapsedTime();
+        if (time.asSeconds() >= 1.0)
         {
-            movePieceDown();
+            downAction();
         }
-        clock.restart();
+        updateGhostPiece();
+    }
+    else
+    {
+        //fix time bug
     }
 
     processInputs(input);
-
-    updateGhostPiece();
 
 }
 
 void GameState::processInputs(const Input& input)
 {
     std::vector<sf::Event> events = input.getEvents();
-
-
 
     for (int i = 0; i < events.size(); i++)
     {
@@ -77,29 +78,19 @@ void GameState::processInputs(const Input& input)
             case sf::Event::JoystickMoved:
                 //Joystick axis events
 
-                if (sf::Joystick::getAxisPosition(0,sf::Joystick::PovY) > 0)
+                if (sf::Joystick::getAxisPosition(0, sf::Joystick::PovY) > 0)
                 {
-                    if (pieceCanMove(1, 0))
-                    {
-                        movePieceDown();
-                    }
-                    clock.restart();
+                    downAction();
                 }
 
-                if (sf::Joystick::getAxisPosition(0,sf::Joystick::PovX) < 0)
+                if (sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) < 0)
                 {
-                    if (pieceCanMove(0, -1))
-                    {
-                        movePieceLeft();
-                    }
+                    leftAction();
                 }
 
-                if (sf::Joystick::getAxisPosition(0,sf::Joystick::PovX) > 0)
+                if (sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) > 0)
                 {
-                    if (pieceCanMove(0, 1))
-                    {
-                        movePieceRight();
-                    }
+                    rightAction();
                 }
                 break;
             case sf::Event::KeyPressed:
@@ -109,76 +100,49 @@ void GameState::processInputs(const Input& input)
                     pWindow->close();
                 }
 
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
+                {
+                    menuAction();
+                }
+
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
                 {
-                    if (pieceCanMove(1, 0))
-                    {
-                        movePieceDown();
-                    }
-                    clock.restart();
+                    downAction();
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
                 {
-                    if (pieceCanMove(0, -1))
-                    {
-                        movePieceLeft();
-                    }
+                    leftAction();
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
                 {
-                    if (pieceCanMove(0, 1))
-                    {
-                        movePieceRight();
-                    }
+                    rightAction();
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
                 {
-                    if (!pieceCanMove(1, 0))
-                    {
-                        tryRotatePieceLeft();
-                        if (pieceCanMove(1, 0))
-                        {
-                            clock.restart();
-                        }
-                    }
-                    else
-                    {
-                        tryRotatePieceLeft();
-                    }
+                    rotateLeftAction();
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
                 {
-                    if (!pieceCanMove(1, 0))
-                    {
-                        tryRotatePieceRight();
-                        if (pieceCanMove(1, 0))
-                        {
-                            clock.restart();
-                        }
-                    }
-                    else
-                    {
-                        tryRotatePieceRight();
-                    }
+                    rotateRightAction();
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
                 {
-                    dropPiece();
+                    dropAction();
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
                 {
-                    holdPiece();
+                    holdAction();
                 }
 
                 break;
-            case sf::Event::KeyReleased:
-                break;
+//            case sf::Event::KeyReleased:
+//                break;
 //            case sf::Event::MouseWheelMoved:
 //                break;
 //            case sf::Event::MouseWheelScrolled:
@@ -199,46 +163,24 @@ void GameState::processInputs(const Input& input)
 //                    pWindow->close();
 //                }
 
-                if (sf::Joystick::isButtonPressed(0,BUTTON_X))
+                if (sf::Joystick::isButtonPressed(0, BUTTON_X))
                 {
-                    if (!pieceCanMove(1, 0))
-                    {
-                        tryRotatePieceLeft();
-                        if (pieceCanMove(1, 0))
-                        {
-                            clock.restart();
-                        }
-                    }
-                    else
-                    {
-                        tryRotatePieceLeft();
-                    }
+                    rotateLeftAction();
                 }
 
-                if (sf::Joystick::isButtonPressed(0,BUTTON_Y))
+                if (sf::Joystick::isButtonPressed(0, BUTTON_Y))
                 {
-                    if (!pieceCanMove(1, 0))
-                    {
-                        tryRotatePieceRight();
-                        if (pieceCanMove(1, 0))
-                        {
-                            clock.restart();
-                        }
-                    }
-                    else
-                    {
-                        tryRotatePieceRight();
-                    }
+                    rotateRightAction();
                 }
 
-                if (sf::Joystick::isButtonPressed(0,BUTTON_A))
+                if (sf::Joystick::isButtonPressed(0, BUTTON_A))
                 {
-                    dropPiece();
+                    dropAction();
                 }
 
-                if (sf::Joystick::isButtonPressed(0,BUTTON_B))
+                if (sf::Joystick::isButtonPressed(0, BUTTON_B))
                 {
-                    holdPiece();
+                    holdAction();
                 }
                 break;
 //            case sf::Event::JoystickButtonReleased:
@@ -260,6 +202,106 @@ void GameState::processInputs(const Input& input)
 //            case sf::Event::Count:
 //                break;
         }
+    }
+}
+
+void GameState::downAction()
+{
+    if (pMenu->getStatus() == MENU_CLOSED)
+    {
+        if (pieceCanMove(1, 0))
+        {
+            movePieceDown();
+        }
+        clock.restart();
+    }
+}
+
+void GameState::leftAction()
+{
+    if (pMenu->getStatus() == MENU_CLOSED)
+    {
+        if (pieceCanMove(0, -1))
+        {
+            movePieceLeft();
+        }
+    }
+}
+
+void GameState::rightAction()
+{
+    if (pMenu->getStatus() == MENU_CLOSED)
+    {
+        if (pieceCanMove(0, 1))
+        {
+            movePieceRight();
+        }
+    }
+}
+
+void GameState::rotateLeftAction()
+{
+    if (pMenu->getStatus() == MENU_CLOSED)
+    {
+        if (!pieceCanMove(1, 0))
+        {
+            tryRotatePieceLeft();
+            if (pieceCanMove(1, 0))
+            {
+                clock.restart();
+            }
+        }
+        else
+        {
+            tryRotatePieceLeft();
+        }
+    }
+}
+
+void GameState::rotateRightAction()
+{
+    if (pMenu->getStatus() == MENU_CLOSED)
+    {
+        if (!pieceCanMove(1, 0))
+        {
+            tryRotatePieceRight();
+            if (pieceCanMove(1, 0))
+            {
+                clock.restart();
+            }
+        }
+        else
+        {
+            tryRotatePieceRight();
+        }
+    }
+}
+
+void GameState::dropAction()
+{
+    if (pMenu->getStatus() == MENU_CLOSED)
+    {
+        dropPiece();
+    }
+}
+
+void GameState::holdAction()
+{
+    if (pMenu->getStatus() == MENU_CLOSED)
+    {
+        holdPiece();
+    }
+}
+
+void GameState::menuAction()
+{
+    if (pMenu->getStatus() == MENU_CLOSED)
+    {
+        pMenu->setStatus(MENU_OPEN);
+    }
+    else
+    {
+        pMenu->setStatus(MENU_CLOSED);
     }
 }
 
@@ -291,6 +333,11 @@ std::shared_ptr<GhostPiece> GameState::getGhostPieceState()
 std::shared_ptr<Holder> GameState::getHolderState()
 {
     return this->pHolder;
+}
+
+std::shared_ptr<Menu> GameState::getMenuState()
+{
+    return this->pMenu;
 }
 
 void GameState::spawnNewPiece()

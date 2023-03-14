@@ -19,6 +19,7 @@
 #include "GhostPiece.h"
 #include "../model/Holder.h"
 #include "../input/Input.h"
+#include "../model/Menu.h"
 
 #include <memory>
 #include <SFML/System/Time.hpp>
@@ -34,10 +35,13 @@ class GameState
     sf::Time time;
     Bag bag;
 
+
+    //Anything that needs to be rendered should be declared as a shared_ptr
     std::shared_ptr<GhostPiece> pGhostPiece;
     std::shared_ptr<Board> pBoard;
     std::shared_ptr<Piece> pPiece;
     std::shared_ptr<Holder> pHolder;
+    std::shared_ptr<Menu> pMenu;
 
     bool canHoldPiece;
 
@@ -59,6 +63,16 @@ public:
     std::shared_ptr<Piece> getPieceState();
     std::shared_ptr<GhostPiece> getGhostPieceState();
     std::shared_ptr<Holder> getHolderState();
+    std::shared_ptr<Menu> getMenuState();
+
+    void downAction();
+    void leftAction();
+    void rightAction();
+    void rotateLeftAction();
+    void rotateRightAction();
+    void dropAction();
+    void holdAction();
+    void menuAction();
 
     void setPieceState(std::shared_ptr<Piece> pPiece);
     void spawnNewPiece();
