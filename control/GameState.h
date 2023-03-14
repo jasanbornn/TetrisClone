@@ -16,10 +16,11 @@
 #include "../model/piece/SPiece.h"
 #include "../model/piece/ZPiece.h"
 #include "../model/Bag.h"
-#include "GhostPiece.h"
+#include "../model/GhostPiece.h"
 #include "../model/Holder.h"
 #include "../input/Input.h"
 #include "../model/Menu.h"
+#include "../render/NextPieceQueue.h"
 
 #include <memory>
 #include <SFML/System/Time.hpp>
@@ -41,6 +42,7 @@ class GameState
     std::shared_ptr<Board> pBoard;
     std::shared_ptr<Piece> pPiece;
     std::shared_ptr<Holder> pHolder;
+    std::shared_ptr<NextPieceQueue> pNPQ;
     std::shared_ptr<Menu> pMenu;
 
     bool canHoldPiece;
@@ -63,6 +65,7 @@ public:
     std::shared_ptr<Piece> getPieceState();
     std::shared_ptr<GhostPiece> getGhostPieceState();
     std::shared_ptr<Holder> getHolderState();
+    std::shared_ptr<NextPieceQueue> getNPQState();
     std::shared_ptr<Menu> getMenuState();
 
     void downAction();

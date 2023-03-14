@@ -30,9 +30,15 @@ GameState::GameState(sf::RenderWindow* pWindow) : bag()
     this->pPiece = bag.getPiece();
     this->pGhostPiece = std::make_shared<GhostPiece>();
     this->pHolder = std::make_shared<Holder>();
+    this->pNPQ = std::make_shared<NextPieceQueue>();
     this->pMenu = std::make_shared<Menu>();
 
     this->canHoldPiece = true;
+
+    for (int i = 0; i < pNPQ->size(); i++)
+    {
+        pNPQ->push(bag.getPiece());
+    }
 }
 
 void GameState::update(Input input)
@@ -335,6 +341,11 @@ std::shared_ptr<Holder> GameState::getHolderState()
     return this->pHolder;
 }
 
+std::shared_ptr<NextPieceQueue> GameState::getNPQState()
+{
+    return this->pNPQ;
+}
+
 std::shared_ptr<Menu> GameState::getMenuState()
 {
     return this->pMenu;
@@ -342,7 +353,8 @@ std::shared_ptr<Menu> GameState::getMenuState()
 
 void GameState::spawnNewPiece()
 {
-    this->pPiece = bag.getPiece();
+    this->pPiece = pNPQ->pop();
+    this->pNPQ->push(bag.getPiece());
     canHoldPiece = true;
 }
 

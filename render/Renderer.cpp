@@ -23,6 +23,7 @@ void Renderer::render(GameState gameState)
     std::shared_ptr<Piece> pPiece = gameState.getPieceState();
     std::shared_ptr<GhostPiece> pGhostPiece = gameState.getGhostPieceState();
     std::shared_ptr<Holder> pHolder = gameState.getHolderState();
+    std::shared_ptr<NextPieceQueue> pNPQ = gameState.getNPQState();
     std::shared_ptr<Menu> pMenu = gameState.getMenuState();
 
     //Clear the window with white color
@@ -42,6 +43,9 @@ void Renderer::render(GameState gameState)
 
     //Draw piece holder
     drawPieceHolder(pHolder);
+
+    //Draw next piece queue
+    drawNPQ(pNPQ);
 
     //Draw the menu
     drawMenu(pMenu);
@@ -192,7 +196,7 @@ void Renderer::drawGhostPiece(const std::shared_ptr<GhostPiece>& pGhostPiece)
 
 void Renderer::drawPieceHolder(const std::shared_ptr<Holder>& holder)
 {
-    //Holder
+    //Bounding box
     sf::Vector2f holderRenderV(TILE_RENDER_WIDTH * 4.0, TILE_RENDER_HEIGHT * 4.0);
     sf::RectangleShape holderRender(holderRenderV);
     holderRender.setOrigin(holderRenderV.x / 2.0, holderRenderV.y / 2.0);
@@ -209,6 +213,32 @@ void Renderer::drawPieceHolder(const std::shared_ptr<Holder>& holder)
     if (holder->getHeldPiece() != nullptr)
     {
         drawUIPiece(holder->getHeldPiece(), holderRenderX, holderRenderY, 0.8);
+    }
+}
+
+void Renderer::drawNPQ(const std::shared_ptr<NextPieceQueue>& NPQ)
+{
+    //Bounding box
+    sf::Vector2f NPQRenderV(TILE_RENDER_WIDTH * 4.0, TILE_RENDER_HEIGHT * 4.0 * 2.0);
+    sf::RectangleShape NPQRender(NPQRenderV);
+    NPQRender.setOrigin(NPQRenderV.x / 2.0, NPQRenderV.y / 2.0);
+    // 1 tile away from right edge of board
+    float NPQRenderX = (WINDOW_WIDTH / 2.0) + (BOARD_RENDER_WIDTH / 2.0) + (TILE_RENDER_WIDTH * 3.0);
+    // 2 tiles away from top edge of board
+    float NPQRenderY = (WINDOW_HEIGHT / 2.0) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * 6.0);
+    NPQRender.setPosition(NPQRenderX, NPQRenderY);
+    NPQRender.setFillColor(sf::Color(0xCCCCCCAA));
+    NPQRender.setOutlineColor(sf::Color::Blue);
+    NPQRender.setOutlineThickness(2.0);
+    pWindow->draw(NPQRender);
+
+    //NPQ pieces
+    float topOfBoundBox = NPQRenderY - (NPQRenderV.y / 2.0);
+    float separation = NPQRenderV.y / NPQ->size();
+    for (unsigned long int i = 0; i < NPQ->size(); i++)
+    {
+        float yPos = topOfBoundBox + (separation / 2.0) + separation*i;
+        drawUIPiece(NPQ->peek(i),NPQRenderX,yPos,0.8);
     }
 }
 

@@ -20,18 +20,18 @@ std::shared_ptr<Piece> Bag::getPiece()
     {
         case I_PIECE:
             return std::make_shared<IPiece>(20, 4);
+        case J_PIECE:
+            return std::make_shared<JPiece>(21, 4);
+        case L_PIECE:
+            return std::make_shared<LPiece>(21, 4);
         case S_PIECE:
             return std::make_shared<SPiece>(21, 4);
         case Z_PIECE:
             return std::make_shared<ZPiece>(21, 4);
-        case L_PIECE:
-            return std::make_shared<LPiece>(21, 4);
-        case J_PIECE:
-            return std::make_shared<JPiece>(21, 4);
-        case O_PIECE:
-            return std::make_shared<OPiece>(20, 4);
         case T_PIECE:
             return std::make_shared<TPiece>(21, 4);
+        case O_PIECE:
+            return std::make_shared<OPiece>(20, 4);
     }
 }
 

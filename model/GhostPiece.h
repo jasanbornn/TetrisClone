@@ -8,8 +8,8 @@
 
 #include <array>
 #include <memory>
-#include "../model/Tile.h"
-#include "../model/piece/Piece.h"
+#include "Tile.h"
+#include "piece/Piece.h"
 
 class GhostPiece
 {

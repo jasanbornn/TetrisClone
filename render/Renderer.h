@@ -34,6 +34,8 @@ public:
 
     void drawPieceHolder(const std::shared_ptr<Holder>& holder);
 
+    void drawNPQ(const std::shared_ptr<NextPieceQueue>& NPQ);
+
     void drawMenu(const std::shared_ptr<Menu>& menu);
 
 
