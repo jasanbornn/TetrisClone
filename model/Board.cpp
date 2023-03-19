@@ -33,7 +33,7 @@ Tile Board::getTile(int row, int col)
     return this->tiles[row][col];
 }
 
-std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> Board::getTiles()
+std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> Board::getTiles() const
 {
     return this->tiles;
 }

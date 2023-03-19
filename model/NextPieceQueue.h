@@ -7,7 +7,7 @@
 
 
 #include <memory>
-#include "../model/piece/Piece.h"
+#include "piece/Piece.h"
 
 #define QUEUE_SIZE 3
 
@@ -20,12 +20,12 @@ public:
 
     NextPieceQueue();
 
-    void push(std::shared_ptr<Piece> piece);
+    void push(const std::shared_ptr<Piece>& pPiece);
     std::shared_ptr<Piece> pop();
-    std::shared_ptr<Piece> peek(int index);
+    std::shared_ptr<Piece> peek(int index) const;
 
     bool isFull();
-    int size();
+    int size() const;
 };
 
 

@@ -20,7 +20,7 @@
 #include "../model/Holder.h"
 #include "../input/Input.h"
 #include "../model/Menu.h"
-#include "../render/NextPieceQueue.h"
+#include "../model/NextPieceQueue.h"
 
 #include <memory>
 #include <SFML/System/Time.hpp>
@@ -36,14 +36,12 @@ class GameState
     sf::Time time;
     Bag bag;
 
-
-    //Anything that needs to be rendered should be declared as a shared_ptr
-    std::shared_ptr<GhostPiece> pGhostPiece;
-    std::shared_ptr<Board> pBoard;
+    GhostPiece ghostPiece;
+    Board board;
     std::shared_ptr<Piece> pPiece;
-    std::shared_ptr<Holder> pHolder;
-    std::shared_ptr<NextPieceQueue> pNPQ;
-    std::shared_ptr<Menu> pMenu;
+    Holder holder;
+    NextPieceQueue NPQ;
+    Menu menu;
 
     bool canHoldPiece;
 
@@ -58,15 +56,12 @@ public:
 
     void processInputs(const Input& input);
 
-    void setBoardState(std::shared_ptr<Board> pBoard);
-    void setBoardState(Board board);
-
-    std::shared_ptr<Board> getBoardState();
+    Board& getBoardState();
     std::shared_ptr<Piece> getPieceState();
-    std::shared_ptr<GhostPiece> getGhostPieceState();
-    std::shared_ptr<Holder> getHolderState();
-    std::shared_ptr<NextPieceQueue> getNPQState();
-    std::shared_ptr<Menu> getMenuState();
+    GhostPiece& getGhostPieceState();
+    Holder& getHolderState();
+    NextPieceQueue& getNPQState();
+    Menu& getMenuState();
 
     void downAction();
     void leftAction();
@@ -77,7 +72,6 @@ public:
     void holdAction();
     void menuAction();
 
-    void setPieceState(std::shared_ptr<Piece> pPiece);
     void spawnNewPiece();
 
     bool pieceCanMove(int dRow, int dCol);

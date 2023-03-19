@@ -19,20 +19,28 @@ std::shared_ptr<Piece> Bag::getPiece()
     switch (choosePiece())
     {
         case I_PIECE:
-            return std::make_shared<IPiece>(20, 4);
+            pPiece = std::shared_ptr<Piece>(new IPiece(20, 4));
+            break;
         case J_PIECE:
-            return std::make_shared<JPiece>(21, 4);
+            pPiece = std::shared_ptr<Piece>(new JPiece(21, 4));
+            break;
         case L_PIECE:
-            return std::make_shared<LPiece>(21, 4);
+            pPiece = std::shared_ptr<Piece>(new LPiece(21, 4));
+            break;
         case S_PIECE:
-            return std::make_shared<SPiece>(21, 4);
+            pPiece = std::shared_ptr<Piece>(new SPiece(21, 4));
+            break;
         case Z_PIECE:
-            return std::make_shared<ZPiece>(21, 4);
+            pPiece = std::shared_ptr<Piece>(new ZPiece(21, 4));
+            break;
         case T_PIECE:
-            return std::make_shared<TPiece>(21, 4);
+            pPiece = std::shared_ptr<Piece>(new TPiece(21, 4));
+            break;
         case O_PIECE:
-            return std::make_shared<OPiece>(20, 4);
+            pPiece = std::shared_ptr<Piece>(new OPiece(20, 4));
+            break;
     }
+    return pPiece;
 }
 
 int Bag::choosePiece()

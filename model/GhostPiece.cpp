@@ -22,7 +22,7 @@ void GhostPiece::update(std::array<Tile,TILES_PER_PIECE> newTiles)
     }
 }
 
-std::array<Tile, TILES_PER_PIECE> GhostPiece::getTiles()
+std::array<Tile, TILES_PER_PIECE> GhostPiece::getTiles() const
 {
     return this->tiles;
 }

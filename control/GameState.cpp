@@ -26,24 +26,24 @@ GameState::GameState(sf::RenderWindow* pWindow) : bag()
 
     this->time = this->clock.getElapsedTime();
 
-    this->pBoard = std::make_shared<Board>();
+    this->board = Board();
     this->pPiece = bag.getPiece();
-    this->pGhostPiece = std::make_shared<GhostPiece>();
-    this->pHolder = std::make_shared<Holder>();
-    this->pNPQ = std::make_shared<NextPieceQueue>();
-    this->pMenu = std::make_shared<Menu>();
+    this->ghostPiece = GhostPiece();
+    this->holder = Holder();
+    this->menu = Menu();
+    this->NPQ = NextPieceQueue();
 
     this->canHoldPiece = true;
 
-    for (int i = 0; i < pNPQ->size(); i++)
+    for (int i = 0; i < NPQ.size(); i++)
     {
-        pNPQ->push(bag.getPiece());
+        NPQ.push(bag.getPiece());
     }
 }
 
 void GameState::update(Input input)
 {
-    if (pMenu->getStatus() == MENU_CLOSED)
+    if (menu.getStatus() == MENU_CLOSED)
     {
         time = clock.getElapsedTime();
         if (time.asSeconds() >= 1.0)
@@ -213,7 +213,7 @@ void GameState::processInputs(const Input& input)
 
 void GameState::downAction()
 {
-    if (pMenu->getStatus() == MENU_CLOSED)
+    if (menu.getStatus() == MENU_CLOSED)
     {
         if (pieceCanMove(1, 0))
         {
@@ -225,7 +225,7 @@ void GameState::downAction()
 
 void GameState::leftAction()
 {
-    if (pMenu->getStatus() == MENU_CLOSED)
+    if (menu.getStatus() == MENU_CLOSED)
     {
         if (pieceCanMove(0, -1))
         {
@@ -236,7 +236,7 @@ void GameState::leftAction()
 
 void GameState::rightAction()
 {
-    if (pMenu->getStatus() == MENU_CLOSED)
+    if (menu.getStatus() == MENU_CLOSED)
     {
         if (pieceCanMove(0, 1))
         {
@@ -247,7 +247,7 @@ void GameState::rightAction()
 
 void GameState::rotateLeftAction()
 {
-    if (pMenu->getStatus() == MENU_CLOSED)
+    if (menu.getStatus() == MENU_CLOSED)
     {
         if (!pieceCanMove(1, 0))
         {
@@ -266,7 +266,7 @@ void GameState::rotateLeftAction()
 
 void GameState::rotateRightAction()
 {
-    if (pMenu->getStatus() == MENU_CLOSED)
+    if (menu.getStatus() == MENU_CLOSED)
     {
         if (!pieceCanMove(1, 0))
         {
@@ -285,7 +285,7 @@ void GameState::rotateRightAction()
 
 void GameState::dropAction()
 {
-    if (pMenu->getStatus() == MENU_CLOSED)
+    if (menu.getStatus() == MENU_CLOSED)
     {
         dropPiece();
     }
@@ -293,7 +293,7 @@ void GameState::dropAction()
 
 void GameState::holdAction()
 {
-    if (pMenu->getStatus() == MENU_CLOSED)
+    if (menu.getStatus() == MENU_CLOSED)
     {
         holdPiece();
     }
@@ -301,29 +301,19 @@ void GameState::holdAction()
 
 void GameState::menuAction()
 {
-    if (pMenu->getStatus() == MENU_CLOSED)
+    if (menu.getStatus() == MENU_CLOSED)
     {
-        pMenu->setStatus(MENU_OPEN);
+        menu.setStatus(MENU_OPEN);
     }
     else
     {
-        pMenu->setStatus(MENU_CLOSED);
+        menu.setStatus(MENU_CLOSED);
     }
 }
 
-void GameState::setBoardState(std::shared_ptr<Board> b)
+Board& GameState::getBoardState()
 {
-    this->pBoard = std::move(b);
-}
-
-std::shared_ptr<Board> GameState::getBoardState()
-{
-    return this->pBoard;
-}
-
-void GameState::setPieceState(std::shared_ptr<Piece> p)
-{
-    this->pPiece = std::move(p);
+    return this->board;
 }
 
 std::shared_ptr<Piece> GameState::getPieceState()
@@ -331,37 +321,37 @@ std::shared_ptr<Piece> GameState::getPieceState()
     return this->pPiece;
 }
 
-std::shared_ptr<GhostPiece> GameState::getGhostPieceState()
+GhostPiece& GameState::getGhostPieceState()
 {
-    return this->pGhostPiece;
+    return this->ghostPiece;
 }
 
-std::shared_ptr<Holder> GameState::getHolderState()
+Holder& GameState::getHolderState()
 {
-    return this->pHolder;
+    return this->holder;
 }
 
-std::shared_ptr<NextPieceQueue> GameState::getNPQState()
+NextPieceQueue& GameState::getNPQState()
 {
-    return this->pNPQ;
+    return NPQ;
 }
 
-std::shared_ptr<Menu> GameState::getMenuState()
+Menu& GameState::getMenuState()
 {
-    return this->pMenu;
+    return this->menu;
 }
 
 void GameState::spawnNewPiece()
 {
-    this->pPiece = pNPQ->pop();
-    this->pNPQ->push(bag.getPiece());
+    this->pPiece = NPQ.pop();
+    this->NPQ.push(bag.getPiece());
     canHoldPiece = true;
 }
 
 bool GameState::pieceCanMove(int dRow, int dCol)
 {
     std::array<Tile, TILES_PER_PIECE> pieceTiles = pPiece->getTiles();
-    std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> boardTiles = pBoard->getTiles();
+    std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> boardTiles = board.getTiles();
     for (int i = 0; i < TILES_PER_PIECE; i++)
     {
         if (pieceTiles[i].getCol() + dCol > BOARD_WIDTH - 1 || pieceTiles[i].getCol() + dCol < 0)
@@ -411,7 +401,7 @@ bool GameState::pieceCollides()
         {
             return true;
         }
-        else if (pBoard->getTile(tile.getRow(), tile.getCol()).getTileType() != TILE_NULL)
+        else if (board.getTile(tile.getRow(), tile.getCol()).getTileType() != TILE_NULL)
         {
             return true;
         }
@@ -423,10 +413,10 @@ void GameState::placePiece()
 {
     for (Tile& tile: pPiece->getTiles())
     {
-        pBoard->addTile(tile);
+        board.addTile(tile);
     }
     spawnNewPiece();
-    pBoard->clearLines();
+    board.clearLines();
 }
 
 void GameState::dropPiece()
@@ -449,7 +439,7 @@ void GameState::updateGhostPiece()
         dRow++;
     }
     pPiece->move(-1, 0);
-    pGhostPiece->update(pPiece->getTiles());
+    ghostPiece.update(pPiece->getTiles());
     pPiece->move(-dRow + 1, 0);
 }
 
@@ -457,7 +447,7 @@ void GameState::holdPiece()
 {
     if (canHoldPiece)
     {
-        pPiece = pHolder->hold(pPiece);
+        pPiece = holder.hold(pPiece);
 
         if (pPiece == nullptr)
         {

@@ -23,7 +23,7 @@ std::shared_ptr<Piece> Holder::hold(const std::shared_ptr<Piece>& pNewPiece)
     return temp;
 }
 
-std::shared_ptr<Piece> Holder::getHeldPiece()
+std::shared_ptr<Piece> Holder::getHeldPiece() const
 {
     return this->pHeldPiece;
 }

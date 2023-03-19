@@ -19,7 +19,7 @@ public:
 
     std::shared_ptr<Piece> hold(const std::shared_ptr<Piece>& p);
 
-    std::shared_ptr<Piece> getHeldPiece();
+    std::shared_ptr<Piece> getHeldPiece() const;
 };
 
 

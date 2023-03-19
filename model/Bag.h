@@ -23,6 +23,8 @@ class Bag
 {
     std::array<bool,BAG_SIZE> pieces = {true, true, true, true, true, true, true}; // One bool for each type of piece. true = piece exists; false = piece is gone
 
+
+    std::shared_ptr<Piece> pPiece;
     int choosePiece();
 
 public:

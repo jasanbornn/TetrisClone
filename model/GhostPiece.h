@@ -19,7 +19,7 @@ class GhostPiece
 public:
     GhostPiece();
     void update(std::array<Tile, TILES_PER_PIECE> newTiles);
-    std::array<Tile,TILES_PER_PIECE> getTiles();
+    std::array<Tile,TILES_PER_PIECE> getTiles() const;
 };
 
 

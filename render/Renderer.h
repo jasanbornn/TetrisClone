@@ -24,19 +24,19 @@ public:
 
     void render(GameState gameState);
 
-    void drawBoard(const std::shared_ptr<Board>& board);
+    void drawBoard(const Board& board);
 
     void drawPiece(const std::shared_ptr<Piece>& piece);
 
-    void drawGhostPiece(const std::shared_ptr<GhostPiece>& ghostPiece);
+    void drawGhostPiece(const GhostPiece& ghostPiece);
 
-    void drawUIPiece(const std::shared_ptr<Piece>& piece, float xPos, float yPos, float scale);
+    void drawUIPiece(const std::shared_ptr<Piece>& pPiece, float xPos, float yPos, float scale);
 
-    void drawPieceHolder(const std::shared_ptr<Holder>& holder);
+    void drawPieceHolder(const Holder& holder);
 
-    void drawNPQ(const std::shared_ptr<NextPieceQueue>& NPQ);
+    void drawNPQ(const NextPieceQueue& NPQ);
 
-    void drawMenu(const std::shared_ptr<Menu>& menu);
+    void drawMenu(const Menu& menu);
 
 
 };

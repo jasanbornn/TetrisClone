@@ -30,7 +30,7 @@ public:
 
     Tile getTile(int row, int col);
 
-    std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> getTiles();
+    std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> getTiles() const;
 
     void addPiece(Piece piece);
 

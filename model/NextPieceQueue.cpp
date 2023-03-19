@@ -25,7 +25,7 @@ bool NextPieceQueue::isFull()
     return true;
 }
 
-int NextPieceQueue::size()
+int NextPieceQueue::size() const
 {
     return QUEUE_SIZE;
 }
@@ -45,12 +45,12 @@ std::shared_ptr<Piece> NextPieceQueue::pop()
     return retPiece;
 }
 
-std::shared_ptr<Piece> NextPieceQueue::peek(int index)
+std::shared_ptr<Piece> NextPieceQueue::peek(int index) const
 {
     return pieces[index];
 }
 
-void NextPieceQueue::push(std::shared_ptr<Piece> newPiece)
+void NextPieceQueue::push(const std::shared_ptr<Piece>& newPiece)
 {
     for (unsigned long int i = 0; i < pieces.size(); i++)
     {

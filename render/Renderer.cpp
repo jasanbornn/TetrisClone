@@ -19,37 +19,33 @@ Renderer::Renderer(sf::RenderWindow* pWindow)
 
 void Renderer::render(GameState gameState)
 {
-    std::shared_ptr<Board> pBoard = gameState.getBoardState();
+    Board& board = gameState.getBoardState();
     std::shared_ptr<Piece> pPiece = gameState.getPieceState();
-    std::shared_ptr<GhostPiece> pGhostPiece = gameState.getGhostPieceState();
-    std::shared_ptr<Holder> pHolder = gameState.getHolderState();
-    std::shared_ptr<NextPieceQueue> pNPQ = gameState.getNPQState();
-    std::shared_ptr<Menu> pMenu = gameState.getMenuState();
+    GhostPiece& ghostPiece = gameState.getGhostPieceState();
+    Holder& holder = gameState.getHolderState();
+    NextPieceQueue& NPQ = gameState.getNPQState();
+    Menu& menu = gameState.getMenuState();
 
     //Clear the window with white color
     pWindow->clear(sf::Color::White);
 
-    //Draw background
-//    drawBackground();
-
     //Draw board pieces
-    drawBoard(pBoard);
+    drawBoard(board);
 
     //Draw ghost piece
-    drawGhostPiece(pGhostPiece);
+    drawGhostPiece(ghostPiece);
 
     //Draw active piece
     drawPiece(pPiece);
 
     //Draw piece holder
-    drawPieceHolder(pHolder);
+    drawPieceHolder(holder);
 
     //Draw next piece queue
-    drawNPQ(pNPQ);
+    drawNPQ(NPQ);
 
     //Draw the menu
-    drawMenu(pMenu);
-
+    drawMenu(menu);
 
     //End the current frame
     pWindow->display();
@@ -140,7 +136,7 @@ void Renderer::drawPiece(const std::shared_ptr<Piece>& piece)
     }
 }
 
-void Renderer::drawBoard(const std::shared_ptr<Board>& board)
+void Renderer::drawBoard(const Board& board)
 {
 
     //Board background
@@ -173,7 +169,7 @@ void Renderer::drawBoard(const std::shared_ptr<Board>& board)
         pWindow->draw(gridLine);
     }
 
-    std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> tiles = board->getTiles();
+    std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> tiles = board.getTiles();
 
     for (int i = (BOARD_HEIGHT / 2); i < BOARD_HEIGHT; i++)
     {
@@ -184,9 +180,9 @@ void Renderer::drawBoard(const std::shared_ptr<Board>& board)
     }
 }
 
-void Renderer::drawGhostPiece(const std::shared_ptr<GhostPiece>& pGhostPiece)
+void Renderer::drawGhostPiece(const GhostPiece& pGhostPiece)
 {
-    std::array<Tile, TILES_PER_PIECE> tiles = pGhostPiece->getTiles();
+    std::array<Tile, TILES_PER_PIECE> tiles = pGhostPiece.getTiles();
 
     for (auto& tile: tiles)
     {
@@ -194,7 +190,7 @@ void Renderer::drawGhostPiece(const std::shared_ptr<GhostPiece>& pGhostPiece)
     }
 }
 
-void Renderer::drawPieceHolder(const std::shared_ptr<Holder>& holder)
+void Renderer::drawPieceHolder(const Holder& holder)
 {
     //Bounding box
     sf::Vector2f holderRenderV(TILE_RENDER_WIDTH * 4.0, TILE_RENDER_HEIGHT * 4.0);
@@ -210,13 +206,13 @@ void Renderer::drawPieceHolder(const std::shared_ptr<Holder>& holder)
     holderRender.setOutlineThickness(2.0);
     pWindow->draw(holderRender);
 
-    if (holder->getHeldPiece() != nullptr)
+    if (holder.getHeldPiece() != nullptr)
     {
-        drawUIPiece(holder->getHeldPiece(), holderRenderX, holderRenderY, 0.8);
+        drawUIPiece(holder.getHeldPiece(), holderRenderX, holderRenderY, 0.8);
     }
 }
 
-void Renderer::drawNPQ(const std::shared_ptr<NextPieceQueue>& NPQ)
+void Renderer::drawNPQ(const NextPieceQueue& NPQ)
 {
     //Bounding box
     sf::Vector2f NPQRenderV(TILE_RENDER_WIDTH * 4.0, TILE_RENDER_HEIGHT * 4.0 * 2.0);
@@ -234,11 +230,11 @@ void Renderer::drawNPQ(const std::shared_ptr<NextPieceQueue>& NPQ)
 
     //NPQ pieces
     float topOfBoundBox = NPQRenderY - (NPQRenderV.y / 2.0);
-    float separation = NPQRenderV.y / NPQ->size();
-    for (unsigned long int i = 0; i < NPQ->size(); i++)
+    float separation = NPQRenderV.y / NPQ.size();
+    for (unsigned long int i = 0; i < NPQ.size(); i++)
     {
-        float yPos = topOfBoundBox + (separation / 2.0) + separation*i;
-        drawUIPiece(NPQ->peek(i),NPQRenderX,yPos,0.8);
+        float yPos = topOfBoundBox + (separation / 2.0) + separation * i;
+        drawUIPiece(NPQ.peek(i), NPQRenderX, yPos, 0.8);
     }
 }
 
@@ -288,9 +284,9 @@ void Renderer::drawUIPiece(const std::shared_ptr<Piece>& piece, float pieceX, fl
     }
 }
 
-void Renderer::drawMenu(const std::shared_ptr<Menu>& menu)
+void Renderer::drawMenu(const Menu& menu)
 {
-    if (menu->getStatus() == MENU_OPEN)
+    if (menu.getStatus() == MENU_OPEN)
     {
         //Large rectangle used to give the screen a dimmed effect
         sf::RectangleShape dimBackground(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
