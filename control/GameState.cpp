@@ -796,18 +796,18 @@ void GameState::tryRotateIPieceLeft()
                     pPiece->move(dRow, dCol);
                     if (pieceCollides())
                     {
-                        dRow = 3;
-                        dCol = -1;
+                        dRow = -2;
+                        dCol = -3;
                         pPiece->move(dRow, dCol);
                         if (pieceCollides())
                         {
-                            dRow = -2;
-                            dCol = -3;
+                            dRow = 3;
+                            dCol = 3;
                             pPiece->move(dRow, dCol);
                             if (pieceCollides())
                             {
-                                dRow = -1;
-                                dCol = 2;
+                                dRow = 1;
+                                dCol = -2;
                                 pPiece->move(dRow, dCol);
                                 pPiece->rotateRight();
                             }
