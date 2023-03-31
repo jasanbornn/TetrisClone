@@ -24,40 +24,128 @@ GameState::GameState(sf::RenderWindow* pWindow) : bag()
 {
     this->pWindow = pWindow;
 
+    this->mode = MAIN_MENU;
+
     this->time = this->clock.getElapsedTime();
 
     this->board = Board();
     this->pPiece = bag.getPiece();
     this->ghostPiece = GhostPiece();
     this->holder = Holder();
-    this->menu = Menu();
     this->NPQ = NextPieceQueue();
 
-    this->canHoldPiece = true;
-
+    //Fill the Next Piece Queue
     for (int i = 0; i < NPQ.size(); i++)
     {
         NPQ.push(bag.getPiece());
     }
+
+    //Initialize pause menu
+    pauseMenu = Menu(500, 400);
+    pauseMenu.addButton(Button("RESUME", [this]() -> void
+    {
+        this->closeMenuAction();
+    }));
+    pauseMenu.addButton(Button("MAIN MENU", [this]() -> void
+    {
+        this->startMainMenu();
+    }));
+
+    //Initialize main menu
+    mainMenu = Menu(500, 500);
+    mainMenu.setStatus(MENU_OPEN);
+    mainMenu.addButton(Button("SINGLE PLAYER", [this]() -> void
+    {
+        this->startOnePlayerGame();
+    }));
+
+    mainMenu.addButton(Button("TWO-PLAYER", [this]() -> void
+    {
+
+    }));
+    mainMenu.addButton(Button("EXIT", [this]() -> void
+    {
+        this->pWindow->close();
+    }));
+
 }
 
 void GameState::update(Input input)
 {
-    if (menu.getStatus() == MENU_CLOSED)
+
+    if (this->mode == MAIN_MENU)
     {
-        time = clock.getElapsedTime();
-        if (time.asSeconds() >= 1.0)
-        {
-            downAction();
-        }
-        updateGhostPiece();
+
     }
-    else
+
+    if (this->mode == ONE_PLAYER_GAME)
     {
-        //fix time bug
+        if (pauseMenu.getStatus() == MENU_CLOSED)
+        {
+            time = clock.getElapsedTime();
+            if (time.asSeconds() >= 1.0)
+            {
+                downAction();
+            }
+            updateGhostPiece();
+        }
+        else
+        {
+            //fix time bug
+        }
+
     }
 
     processInputs(input);
+}
+
+void GameState::setMode(int newMode)
+{
+    this->mode = newMode;
+}
+
+int GameState::getMode() const
+{
+    return this->mode;
+}
+
+void GameState::startMainMenu()
+{
+    this->setMode(MAIN_MENU);
+}
+
+void GameState::startOnePlayerGame()
+{
+    this->board = Board();
+    this->pPiece = bag.getPiece();
+    this->ghostPiece = GhostPiece();
+    this->holder = Holder();
+    this->NPQ = NextPieceQueue();
+
+    //Fill the Next Piece Queue
+    for (int i = 0; i < NPQ.size(); i++)
+    {
+        NPQ.push(bag.getPiece());
+    }
+
+    //Initialize pause menu
+    pauseMenu = Menu(500, 400);
+    pauseMenu.addButton(Button("RESUME", [this]() -> void
+    {
+        this->closeMenuAction();
+    }));
+    pauseMenu.addButton(Button("MAIN MENU", [this]() -> void
+    {
+        this->startMainMenu();
+    }));
+
+    clock.restart();
+
+    this->setMode(ONE_PLAYER_GAME);
+}
+
+void GameState::startTwoPlayerGame()
+{
 
 }
 
@@ -108,9 +196,13 @@ void GameState::processInputs(const Input& input)
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
                 {
-                    menuAction();
+                    toggleMenuAction();
                 }
 
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+                {
+                    upAction();
+                }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
                 {
                     downAction();
@@ -124,6 +216,11 @@ void GameState::processInputs(const Input& input)
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
                 {
                     rightAction();
+                }
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+                {
+                    selectAction();
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
@@ -211,21 +308,64 @@ void GameState::processInputs(const Input& input)
     }
 }
 
+void GameState::upAction()
+{
+    if (mode == MAIN_MENU)
+    {
+        mainMenu.moveSelectionUp();
+    }
+
+    if (mode == ONE_PLAYER_GAME)
+    {
+        if (pauseMenu.getStatus() == MENU_OPEN)
+        {
+            pauseMenu.moveSelectionUp();
+        }
+    }
+
+    if (mode == TWO_PLAYER_GAME)
+    {
+
+    }
+
+}
+
 void GameState::downAction()
 {
-    if (menu.getStatus() == MENU_CLOSED)
+    if (mode == MAIN_MENU)
     {
-        if (pieceCanMove(1, 0))
-        {
-            movePieceDown();
-        }
-        clock.restart();
+        mainMenu.moveSelectionDown();
     }
+
+    if (mode == ONE_PLAYER_GAME)
+    {
+        if (pauseMenu.getStatus() == MENU_CLOSED)
+        {
+            if (pieceCanMove(1, 0))
+            {
+                movePieceDown();
+            }
+            clock.restart();
+        }
+        else
+        {
+            pauseMenu.moveSelectionDown();
+        }
+
+
+    }
+
+    if (mode == TWO_PLAYER_GAME)
+    {
+
+    }
+
+
 }
 
 void GameState::leftAction()
 {
-    if (menu.getStatus() == MENU_CLOSED)
+    if (pauseMenu.getStatus() == MENU_CLOSED)
     {
         if (pieceCanMove(0, -1))
         {
@@ -236,7 +376,7 @@ void GameState::leftAction()
 
 void GameState::rightAction()
 {
-    if (menu.getStatus() == MENU_CLOSED)
+    if (pauseMenu.getStatus() == MENU_CLOSED)
     {
         if (pieceCanMove(0, 1))
         {
@@ -245,9 +385,29 @@ void GameState::rightAction()
     }
 }
 
+void GameState::selectAction()
+{
+    if (mode == MAIN_MENU)
+    {
+        if (mainMenu.getStatus() == MENU_OPEN)
+        {
+            mainMenu.fireActiveButton();
+        }
+    }
+
+    if (mode == ONE_PLAYER_GAME)
+    {
+        if (pauseMenu.getStatus() == MENU_OPEN)
+        {
+            pauseMenu.fireActiveButton();
+        }
+    }
+
+}
+
 void GameState::rotateLeftAction()
 {
-    if (menu.getStatus() == MENU_CLOSED)
+    if (pauseMenu.getStatus() == MENU_CLOSED)
     {
         if (!pieceCanMove(1, 0))
         {
@@ -266,7 +426,7 @@ void GameState::rotateLeftAction()
 
 void GameState::rotateRightAction()
 {
-    if (menu.getStatus() == MENU_CLOSED)
+    if (pauseMenu.getStatus() == MENU_CLOSED)
     {
         if (!pieceCanMove(1, 0))
         {
@@ -285,7 +445,7 @@ void GameState::rotateRightAction()
 
 void GameState::dropAction()
 {
-    if (menu.getStatus() == MENU_CLOSED)
+    if (pauseMenu.getStatus() == MENU_CLOSED)
     {
         dropPiece();
     }
@@ -293,22 +453,27 @@ void GameState::dropAction()
 
 void GameState::holdAction()
 {
-    if (menu.getStatus() == MENU_CLOSED)
+    if (pauseMenu.getStatus() == MENU_CLOSED)
     {
         holdPiece();
     }
 }
 
-void GameState::menuAction()
+void GameState::toggleMenuAction()
 {
-    if (menu.getStatus() == MENU_CLOSED)
+    if (pauseMenu.getStatus() == MENU_CLOSED)
     {
-        menu.setStatus(MENU_OPEN);
+        pauseMenu.setStatus(MENU_OPEN);
     }
     else
     {
-        menu.setStatus(MENU_CLOSED);
+        pauseMenu.setStatus(MENU_CLOSED);
     }
+}
+
+void GameState::closeMenuAction()
+{
+    pauseMenu.setStatus(MENU_CLOSED);
 }
 
 Board& GameState::getBoardState()
@@ -338,14 +503,24 @@ NextPieceQueue& GameState::getNPQState()
 
 Menu& GameState::getMenuState()
 {
-    return this->menu;
+    if (mode == MAIN_MENU)
+    {
+        return this->mainMenu;
+    }
+
+    if (mode == ONE_PLAYER_GAME)
+    {
+        return this->pauseMenu;
+    }
+
+    return this->mainMenu;
 }
 
 void GameState::spawnNewPiece()
 {
     this->pPiece = NPQ.pop();
     this->NPQ.push(bag.getPiece());
-    canHoldPiece = true;
+    holder.enableHolding();
 }
 
 bool GameState::pieceCanMove(int dRow, int dCol)
@@ -445,7 +620,7 @@ void GameState::updateGhostPiece()
 
 void GameState::holdPiece()
 {
-    if (canHoldPiece)
+    if (holder.canHold())
     {
         pPiece = holder.hold(pPiece);
 
@@ -454,7 +629,7 @@ void GameState::holdPiece()
             spawnNewPiece();
         }
 
-        canHoldPiece = false;
+        holder.disableHolding();
     }
 }
 

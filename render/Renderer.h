@@ -7,11 +7,13 @@
 
 
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include "../control/GameState.h"
 
 class Renderer
 {
     sf::RenderWindow* pWindow;
+    sf::Font mainFont;
 
     void drawTile(Tile tile);
 
@@ -22,7 +24,11 @@ class Renderer
 public:
     explicit Renderer(sf::RenderWindow* pWindow);
 
-    void render(GameState gameState);
+    void render(const GameState& gameState);
+
+    void drawMainMenu(GameState gameState);
+    void drawOnePlayerGame(GameState gameState);
+    void drawTwoPlayerGame();
 
     void drawBoard(const Board& board);
 
@@ -36,7 +42,7 @@ public:
 
     void drawNPQ(const NextPieceQueue& NPQ);
 
-    void drawMenu(const Menu& menu);
+    void drawMenu(Menu& menu);
 
 
 };

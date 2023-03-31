@@ -4,6 +4,8 @@
 
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <iostream>
+#include <SFML/Graphics/Text.hpp>
 #include "Renderer.h"
 #include "../WindowConstants.h"
 
@@ -11,13 +13,50 @@
 #define BOARD_RENDER_WIDTH (BOARD_RENDER_HEIGHT / 2.0)
 #define TILE_RENDER_WIDTH (BOARD_RENDER_WIDTH / BOARD_WIDTH)
 #define TILE_RENDER_HEIGHT (BOARD_RENDER_HEIGHT / (BOARD_HEIGHT / 2))
+#define TEXT_SIZE (WINDOW_HEIGHT / 25.0)
 
 Renderer::Renderer(sf::RenderWindow* pWindow)
 {
     this->pWindow = pWindow;
+
+    if (!mainFont.loadFromFile("../NotoSansCJK-Black.ttc"))
+    {
+
+        std::cout << "Error loading font..." << "\n";
+        pWindow->close();
+    }
 }
 
-void Renderer::render(GameState gameState)
+void Renderer::render(const GameState& gameState)
+{
+    //Clear the window with white color
+    pWindow->clear(sf::Color::White);
+
+    switch (gameState.getMode())
+    {
+        case MAIN_MENU:
+            drawMainMenu(gameState);
+            break;
+        case ONE_PLAYER_GAME:
+            drawOnePlayerGame(gameState);
+            break;
+        case TWO_PLAYER_GAME:
+            drawTwoPlayerGame();
+            break;
+    }
+
+    //End the current frame
+    pWindow->display();
+}
+
+void Renderer::drawMainMenu(GameState gameState)
+{
+    Menu& menu = gameState.getMenuState();
+
+    drawMenu(menu);
+}
+
+void Renderer::drawOnePlayerGame(GameState gameState)
 {
     Board& board = gameState.getBoardState();
     std::shared_ptr<Piece> pPiece = gameState.getPieceState();
@@ -25,9 +64,6 @@ void Renderer::render(GameState gameState)
     Holder& holder = gameState.getHolderState();
     NextPieceQueue& NPQ = gameState.getNPQState();
     Menu& menu = gameState.getMenuState();
-
-    //Clear the window with white color
-    pWindow->clear(sf::Color::White);
 
     //Draw board pieces
     drawBoard(board);
@@ -46,9 +82,11 @@ void Renderer::render(GameState gameState)
 
     //Draw the menu
     drawMenu(menu);
+}
 
-    //End the current frame
-    pWindow->display();
+void Renderer::drawTwoPlayerGame()
+{
+
 }
 
 void Renderer::drawTile(Tile tile)
@@ -206,6 +244,19 @@ void Renderer::drawPieceHolder(const Holder& holder)
     holderRender.setOutlineThickness(2.0);
     pWindow->draw(holderRender);
 
+    //Text "HOLD"
+    sf::Text holdText;
+    holdText.setFont(mainFont);
+    holdText.setString("HOLD");
+    holdText.setCharacterSize(TEXT_SIZE);
+    holdText.setFillColor(sf::Color::Black);
+    sf::FloatRect holdTextV = holdText.getLocalBounds();
+    holdText.setOrigin(holdTextV.left + holdTextV.width / 2.0, holdTextV.top + holdTextV.height / 2.0);
+    float topOfBox = holderRenderY - holderRenderV.y / 2.0;
+    holdText.setPosition(holderRenderX, topOfBox - TILE_RENDER_HEIGHT);
+    pWindow->draw(holdText);
+
+    //Piece display
     if (holder.getHeldPiece() != nullptr)
     {
         drawUIPiece(holder.getHeldPiece(), holderRenderX, holderRenderY, 0.8);
@@ -227,6 +278,18 @@ void Renderer::drawNPQ(const NextPieceQueue& NPQ)
     NPQRender.setOutlineColor(sf::Color::Blue);
     NPQRender.setOutlineThickness(2.0);
     pWindow->draw(NPQRender);
+
+    //Text "NEXT"
+    sf::Text nextText;
+    nextText.setFont(mainFont);
+    nextText.setString("NEXT");
+    nextText.setCharacterSize(TEXT_SIZE);
+    nextText.setFillColor(sf::Color::Black);
+    sf::FloatRect nextTextV = nextText.getLocalBounds();
+    nextText.setOrigin(nextTextV.left + nextTextV.width / 2.0, nextTextV.top + nextTextV.height / 2.0);
+    float topOfBox = NPQRenderY - NPQRenderV.y / 2.0;
+    nextText.setPosition(NPQRenderX, topOfBox - TILE_RENDER_HEIGHT);
+    pWindow->draw(nextText);
 
     //NPQ pieces
     float topOfBoundBox = NPQRenderY - (NPQRenderV.y / 2.0);
@@ -284,7 +347,7 @@ void Renderer::drawUIPiece(const std::shared_ptr<Piece>& piece, float pieceX, fl
     }
 }
 
-void Renderer::drawMenu(const Menu& menu)
+void Renderer::drawMenu(Menu& menu)
 {
     if (menu.getStatus() == MENU_OPEN)
     {
@@ -294,16 +357,70 @@ void Renderer::drawMenu(const Menu& menu)
         dimBackground.setFillColor(sf::Color(50, 50, 50, 200));
 
         //Background of menu
-        sf::Vector2f menuBgV(WINDOW_WIDTH / 1.5, WINDOW_HEIGHT / 1.5); //Menu's vector (shape)
+        sf::Vector2f menuBgV(menu.getWidth(), menu.getHeight()); //Menu's vector (shape)
         sf::RectangleShape menuBg(menuBgV);
         menuBg.setOrigin(menuBgV.x / 2.0, menuBgV.y / 2.0);
-        menuBg.setPosition(WINDOW_WIDTH / 2.0, WINDOW_HEIGHT / 2.0);
+        float menuBgX = WINDOW_WIDTH / 2.0;
+        float menuBgY = WINDOW_HEIGHT / 2.0;
+        menuBg.setPosition(menuBgX, menuBgY);
         menuBg.setFillColor(sf::Color(0xCCCCCCAA));
         menuBg.setOutlineColor(sf::Color::Green);
         menuBg.setOutlineThickness(2.0);
 
         pWindow->draw(dimBackground);
         pWindow->draw(menuBg);
+
+        //Draw menu buttons
+        float marginSize = menuBgV.x / 50.0;
+        float buttonWidth = menuBgV.x / 1.2 - marginSize * 2.0;
+        float buttonHeight = (menuBgV.y / menu.getNumButtons()) / 1.2 - marginSize * 2.0;
+        float topOfMenu = menuBgY - menuBgV.y / 2.0;
+        float separation = menuBgV.y / menu.getNumButtons();
+
+        for (int i = 0; i < menu.getNumButtons(); i++)
+        {
+            Button button = menu.getButton(i);
+
+            //Draw button
+            float buttonX = menuBgX;
+            float buttonY = topOfMenu + (separation / 2.0) + separation * i;
+            sf::Vector2f buttonRenderV(buttonWidth, buttonHeight);
+            sf::RectangleShape buttonRender(buttonRenderV);
+            buttonRender.setOrigin(buttonWidth / 2.0, buttonHeight / 2.0);
+            buttonRender.setPosition(buttonX, buttonY);
+            if (button.isActive())
+            {
+                buttonRender.setFillColor(sf::Color(0x0000FFFF));
+            }
+            else
+            {
+                buttonRender.setFillColor(sf::Color(0x000099FF));
+            }
+            buttonRender.setOutlineColor(sf::Color::Black);
+            buttonRender.setOutlineThickness(2);
+            pWindow->draw(buttonRender);
+
+            //Draw button text
+            sf::Text buttonText;
+            buttonText.setFont(mainFont);
+            buttonText.setString(button.getText());
+            buttonText.setCharacterSize(TEXT_SIZE);
+            if (button.isActive())
+            {
+                buttonText.setFillColor(sf::Color::White);
+            }
+            else
+            {
+                buttonText.setFillColor(sf::Color::Black);
+            }
+            sf::FloatRect buttonTextV = buttonText.getGlobalBounds();
+            buttonText.setOrigin(buttonTextV.left + buttonTextV.width / 2.0,
+                                 buttonTextV.top + buttonTextV.height / 2.0);
+            buttonText.setPosition(buttonX, buttonY);
+            pWindow->draw(buttonText);
+
+
+        }
     }
 }
 

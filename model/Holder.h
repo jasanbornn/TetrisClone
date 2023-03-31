@@ -12,6 +12,7 @@
 class Holder
 {
     std::shared_ptr<Piece> pHeldPiece = nullptr;
+    bool holdingEnabled;
 
 public:
 
@@ -20,6 +21,10 @@ public:
     std::shared_ptr<Piece> hold(const std::shared_ptr<Piece>& p);
 
     std::shared_ptr<Piece> getHeldPiece() const;
+
+    bool canHold() const;
+    void disableHolding();
+    void enableHolding();
 };
 
 

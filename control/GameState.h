@@ -19,13 +19,17 @@
 #include "../model/GhostPiece.h"
 #include "../model/Holder.h"
 #include "../input/Input.h"
-#include "../model/Menu.h"
+#include "../render/Menu.h"
 #include "../model/NextPieceQueue.h"
 
 #include <memory>
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+
+#define MAIN_MENU 0
+#define ONE_PLAYER_GAME 1
+#define TWO_PLAYER_GAME 2
 
 class GameState
 {
@@ -34,6 +38,7 @@ class GameState
 
     sf::Clock clock;
     sf::Time time;
+    int mode;
     Bag bag;
 
     GhostPiece ghostPiece;
@@ -41,9 +46,8 @@ class GameState
     std::shared_ptr<Piece> pPiece;
     Holder holder;
     NextPieceQueue NPQ;
-    Menu menu;
-
-    bool canHoldPiece;
+    Menu pauseMenu;
+    Menu mainMenu;
 
     void tryRotateIPieceLeft();
     void tryRotateIPieceRight();
@@ -54,6 +58,13 @@ public:
 
     void update(Input input);
 
+    void setMode(int newMode);
+    int getMode() const;
+
+    void startMainMenu();
+    void startOnePlayerGame();
+    void startTwoPlayerGame();
+
     void processInputs(const Input& input);
 
     Board& getBoardState();
@@ -63,14 +74,17 @@ public:
     NextPieceQueue& getNPQState();
     Menu& getMenuState();
 
+    void upAction();
     void downAction();
     void leftAction();
     void rightAction();
+    void selectAction();
     void rotateLeftAction();
     void rotateRightAction();
     void dropAction();
     void holdAction();
-    void menuAction();
+    void toggleMenuAction();
+    void closeMenuAction();
 
     void spawnNewPiece();
 
