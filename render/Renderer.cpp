@@ -41,7 +41,7 @@ void Renderer::render(const GameState& gameState)
             drawOnePlayerGame(gameState);
             break;
         case TWO_PLAYER_GAME:
-            drawTwoPlayerGame();
+            drawTwoPlayerGame(gameState);
             break;
     }
 
@@ -65,37 +65,78 @@ void Renderer::drawOnePlayerGame(GameState gameState)
     NextPieceQueue& NPQ = gameState.getNPQState();
     Menu& menu = gameState.getMenuState();
 
+    float boardX = WINDOW_WIDTH / 2.0;
+    float boardY = WINDOW_HEIGHT / 2.0;
+
     //Draw board pieces
-    drawBoard(board);
+    drawBoard(board, boardX, boardY);
 
     //Draw ghost piece
-    drawGhostPiece(ghostPiece);
+    drawGhostPiece(ghostPiece, boardX);
 
     //Draw active piece
-    drawPiece(pPiece);
+    drawPiece(pPiece, boardX);
 
     //Draw piece holder
-    drawPieceHolder(holder);
+    drawPieceHolder(holder, boardX, PLAYER_ONE);
 
     //Draw next piece queue
-    drawNPQ(NPQ);
+    drawNPQ(NPQ, boardX, ONE_PLAYER_GAME, PLAYER_ONE);
 
     //Draw the menu
     drawMenu(menu);
 }
 
-void Renderer::drawTwoPlayerGame()
+void Renderer::drawTwoPlayerGame(GameState gameState)
 {
+    Board& board1 = gameState.getBoardState();
+    Board& board2 = gameState.getBoard2State();
+    std::shared_ptr<Piece> pPiece1 = gameState.getPieceState();
+    std::shared_ptr<Piece> pPiece2 = gameState.getPiece2State();
+    GhostPiece& ghostPiece1 = gameState.getGhostPieceState();
+    GhostPiece& ghostPiece2 = gameState.getGhostPiece2State();
+    Holder& holder1 = gameState.getHolderState();
+    Holder& holder2 = gameState.getHolder2State();
+    NextPieceQueue& NPQ1 = gameState.getNPQState();
+    NextPieceQueue& NPQ2 = gameState.getNPQ2State();
+    Menu& menu = gameState.getMenuState();
 
+    float board1X = WINDOW_WIDTH / 3.0;
+    float board1Y = WINDOW_HEIGHT / 2.0;
+    float board2X = WINDOW_WIDTH * 2.0 / 3.0;
+    float board2Y = WINDOW_HEIGHT / 2.0;
+
+    //Draw boards
+    drawBoard(board1, board1X, board1Y);
+    drawBoard(board2, board2X, board2Y);
+
+    //Draw ghost pieces
+    drawGhostPiece(ghostPiece1, board1X);
+    drawGhostPiece(ghostPiece2, board2X);
+
+    //Draw active pieces
+    drawPiece(pPiece1, board1X);
+    drawPiece(pPiece2, board2X);
+
+    //Draw piece holders
+    drawPieceHolder(holder1, board1X, PLAYER_ONE);
+    drawPieceHolder(holder2, board2X, PLAYER_TWO);
+
+    //Draw next piece queues
+    drawNPQ(NPQ1, board1X, TWO_PLAYER_GAME, PLAYER_ONE);
+    drawNPQ(NPQ2, board2X, TWO_PLAYER_GAME, PLAYER_TWO);
+
+    //Draw menu
+    drawMenu(menu);
 }
 
-void Renderer::drawTile(Tile tile)
+void Renderer::drawTile(Tile tile, float boardX)
 {
     int row = tile.getRow();
     int col = tile.getCol();
     int tileType = tile.getTileType();
 
-    float xPos = (WINDOW_WIDTH / 2.f) - (BOARD_RENDER_WIDTH / 2.f) + (TILE_RENDER_WIDTH * col);
+    float xPos = boardX - (BOARD_RENDER_WIDTH / 2.f) + (TILE_RENDER_WIDTH * col);
     float yPos = (WINDOW_HEIGHT / 2.f) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * (row - 20));
 
     drawTile(tileType, xPos, yPos, 1.0);
@@ -146,14 +187,14 @@ void Renderer::drawTile(int tileType, float xPos, float yPos, float scale)
     pWindow->draw(tileRender);
 }
 
-void Renderer::drawGhostTile(Tile tile)
+void Renderer::drawGhostTile(Tile tile, float boardX)
 {
     int col = tile.getCol();
     int row = tile.getRow();
 
     sf::RectangleShape tileRender(sf::Vector2f(TILE_RENDER_WIDTH, TILE_RENDER_HEIGHT));
 
-    float tileX = (WINDOW_WIDTH / 2.f) - (BOARD_RENDER_WIDTH / 2.f) + (TILE_RENDER_WIDTH * col);
+    float tileX = boardX - (BOARD_RENDER_WIDTH / 2.f) + (TILE_RENDER_WIDTH * col);
     float tileY = (WINDOW_HEIGHT / 2.f) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * (row - 20));
 
     tileRender.setPosition(tileX, tileY);
@@ -164,24 +205,24 @@ void Renderer::drawGhostTile(Tile tile)
 
 }
 
-void Renderer::drawPiece(const std::shared_ptr<Piece>& piece)
+void Renderer::drawPiece(const std::shared_ptr<Piece>& piece, float boardX)
 {
     std::array<Tile, TILES_PER_PIECE> tiles = piece->getTiles();
 
     for (auto& tile: tiles)
     {
-        drawTile(tile);
+        drawTile(tile, boardX);
     }
 }
 
-void Renderer::drawBoard(const Board& board)
+void Renderer::drawBoard(const Board& board, float xPos, float yPos)
 {
 
     //Board background
     sf::Vector2f boardBgV(BOARD_RENDER_WIDTH, BOARD_RENDER_HEIGHT);
     sf::RectangleShape boardBg(boardBgV);
     boardBg.setOrigin(boardBgV.x / 2.0, boardBgV.y / 2.0);
-    boardBg.setPosition(WINDOW_WIDTH / 2.0, WINDOW_HEIGHT / 2.0);
+    boardBg.setPosition(xPos, yPos);
     boardBg.setFillColor(sf::Color::White);
     boardBg.setOutlineColor(sf::Color::Blue);
     boardBg.setOutlineThickness(2.0);
@@ -191,7 +232,7 @@ void Renderer::drawBoard(const Board& board)
     for (int i = 0; i < BOARD_WIDTH; i++)
     {
         sf::RectangleShape gridLine(sf::Vector2f(1.0, BOARD_RENDER_HEIGHT));
-        gridLine.setPosition(WINDOW_WIDTH / 2.0 - BOARD_RENDER_WIDTH / 2 + TILE_RENDER_WIDTH * i,
+        gridLine.setPosition(xPos - BOARD_RENDER_WIDTH / 2 + TILE_RENDER_WIDTH * i,
                              (WINDOW_HEIGHT / 2.0) - (BOARD_RENDER_HEIGHT / 2.0));
         gridLine.setFillColor(sf::Color(0x99, 0x99, 0x99));
         pWindow->draw(gridLine);
@@ -201,7 +242,7 @@ void Renderer::drawBoard(const Board& board)
     for (int i = 0; i < BOARD_HEIGHT / 2; i++)
     {
         sf::RectangleShape gridLine(sf::Vector2f(BOARD_RENDER_WIDTH, 1.0));
-        gridLine.setPosition((WINDOW_WIDTH / 2.0) - (BOARD_RENDER_WIDTH / 2.0),
+        gridLine.setPosition(xPos - (BOARD_RENDER_WIDTH / 2.0),
                              (WINDOW_HEIGHT / 2.0) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * i));
         gridLine.setFillColor(sf::Color(0x99, 0x99, 0x99));
         pWindow->draw(gridLine);
@@ -213,31 +254,47 @@ void Renderer::drawBoard(const Board& board)
     {
         for (int j = 0; j < BOARD_WIDTH; j++)
         {
-            drawTile(tiles[i][j]);
+            drawTile(tiles[i][j], xPos);
         }
     }
 }
 
-void Renderer::drawGhostPiece(const GhostPiece& pGhostPiece)
+void Renderer::drawGhostPiece(const GhostPiece& ghostPiece, float boardX)
 {
-    std::array<Tile, TILES_PER_PIECE> tiles = pGhostPiece.getTiles();
+    std::array<Tile, TILES_PER_PIECE> tiles = ghostPiece.getTiles();
 
     for (auto& tile: tiles)
     {
-        drawGhostTile(tile);
+        drawGhostTile(tile, boardX);
     }
 }
 
-void Renderer::drawPieceHolder(const Holder& holder)
+void Renderer::drawPieceHolder(const Holder& holder, float boardX, int player)
 {
-    //Bounding box
+    //Bounding box position
+    float holderRenderX, holderRenderY;
+
+    if (player == PLAYER_ONE)
+    {
+        // 1 tile away from left edge of board
+        holderRenderX = boardX - (BOARD_RENDER_WIDTH / 2.0) - (TILE_RENDER_WIDTH * 3.0);
+        // 2 tiles away from top edge of board
+        holderRenderY = (WINDOW_HEIGHT / 2.0) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * 4.0);
+    }
+    else
+    {
+        // 1 tile away from right edge of board
+        holderRenderX = boardX + (BOARD_RENDER_WIDTH / 2.0) + (TILE_RENDER_WIDTH * 3.0);
+        // 2 tiles away from top edge of board
+        holderRenderY = (WINDOW_HEIGHT / 2.0) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * 4.0);
+    }
+
+
+    //Draw bounding box
     sf::Vector2f holderRenderV(TILE_RENDER_WIDTH * 4.0, TILE_RENDER_HEIGHT * 4.0);
     sf::RectangleShape holderRender(holderRenderV);
     holderRender.setOrigin(holderRenderV.x / 2.0, holderRenderV.y / 2.0);
-    // 1 tile away from left edge of board
-    float holderRenderX = (WINDOW_WIDTH / 2.0) - (BOARD_RENDER_WIDTH / 2.0) - (TILE_RENDER_WIDTH * 3.0);
-    // 2 tiles away from top edge of board
-    float holderRenderY = (WINDOW_HEIGHT / 2.0) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * 4.0);
+
     holderRender.setPosition(holderRenderX, holderRenderY);
     holderRender.setFillColor(sf::Color(0xCCCCCCAA));
     holderRender.setOutlineColor(sf::Color::Blue);
@@ -263,16 +320,46 @@ void Renderer::drawPieceHolder(const Holder& holder)
     }
 }
 
-void Renderer::drawNPQ(const NextPieceQueue& NPQ)
+void Renderer::drawNPQ(const NextPieceQueue& NPQ, float boardX, int mode, int player)
 {
-    //Bounding box
+    //Bounding box position
+    float NPQRenderX, NPQRenderY;
+    if (mode == ONE_PLAYER_GAME)
+    {
+        // 1 tile away from right edge of board
+        NPQRenderX = boardX + (BOARD_RENDER_WIDTH / 2.0) + (TILE_RENDER_WIDTH * 3.0);
+
+        // 2 tiles away from top edge of board
+        NPQRenderY = (WINDOW_HEIGHT / 2.0) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * 6.0);
+    }
+    else
+    {
+        if (player == PLAYER_ONE)
+        {
+            // 1 tile away from left edge of board
+            NPQRenderX = boardX - (BOARD_RENDER_WIDTH / 2.0) - (TILE_RENDER_WIDTH * 3.0);
+
+            // 8 tiles away from top edge of board
+            NPQRenderY = (WINDOW_HEIGHT / 2.0) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * 12.0);
+        }
+        else
+        {
+            // 1 tile away from right edge of board
+            NPQRenderX = boardX + (BOARD_RENDER_WIDTH / 2.0) + (TILE_RENDER_WIDTH * 3.0);
+
+            // 8 tiles away from top edge of board
+            NPQRenderY = (WINDOW_HEIGHT / 2.0) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * 12.0);
+        }
+
+    }
+
+
+
+
+    //Draw bounding box
     sf::Vector2f NPQRenderV(TILE_RENDER_WIDTH * 4.0, TILE_RENDER_HEIGHT * 4.0 * 2.0);
     sf::RectangleShape NPQRender(NPQRenderV);
     NPQRender.setOrigin(NPQRenderV.x / 2.0, NPQRenderV.y / 2.0);
-    // 1 tile away from right edge of board
-    float NPQRenderX = (WINDOW_WIDTH / 2.0) + (BOARD_RENDER_WIDTH / 2.0) + (TILE_RENDER_WIDTH * 3.0);
-    // 2 tiles away from top edge of board
-    float NPQRenderY = (WINDOW_HEIGHT / 2.0) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * 6.0);
     NPQRender.setPosition(NPQRenderX, NPQRenderY);
     NPQRender.setFillColor(sf::Color(0xCCCCCCAA));
     NPQRender.setOutlineColor(sf::Color::Blue);
@@ -302,14 +389,15 @@ void Renderer::drawNPQ(const NextPieceQueue& NPQ)
 }
 
 //Draw a piece on a give spot on the screen
-void Renderer::drawUIPiece(const std::shared_ptr<Piece>& piece, float pieceX, float pieceY, float scale)
+void
+Renderer::drawUIPiece(const std::shared_ptr<Piece>& pPiece, float pieceX, float pieceY, float scale)
 {
-    std::array<Tile, TILES_PER_PIECE> relativePieceTiles = piece->getRelativeTiles();
+    std::array<Tile, TILES_PER_PIECE> relativePieceTiles = pPiece->getRelativeTiles();
 
 
     //Offset the pieces so they render with their position in the center of their shape.
     float xOffset, yOffset;
-    switch (piece->getType())
+    switch (pPiece->getType())
     {
         case O_PIECE:
             xOffset = TILE_RENDER_WIDTH * scale;

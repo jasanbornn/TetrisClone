@@ -31,32 +31,47 @@
 #define ONE_PLAYER_GAME 1
 #define TWO_PLAYER_GAME 2
 
+#define PLAYER_ONE 1
+#define PLAYER_TWO 2
+
 class GameState
 {
 
     sf::RenderWindow* pWindow;
-
-    sf::Clock clock;
-    sf::Time time;
     int mode;
-    Bag bag;
 
-    GhostPiece ghostPiece;
-    Board board;
-    std::shared_ptr<Piece> pPiece;
-    Holder holder;
-    NextPieceQueue NPQ;
     Menu pauseMenu;
     Menu mainMenu;
 
-    void tryRotateIPieceLeft();
-    void tryRotateIPieceRight();
+    sf::Clock clock;
+    sf::Clock clock2;
+    sf::Time gravityTime;
+    sf::Time gravityTime2;
+    Bag bag;
+    Bag bag2;
+
+    GhostPiece ghostPiece;
+    GhostPiece ghostPiece2;
+    Board board;
+    Board board2;
+    std::shared_ptr<Piece> pPiece;
+    std::shared_ptr<Piece> pPiece2;
+    Holder holder;
+    Holder holder2;
+    NextPieceQueue NPQ;
+    NextPieceQueue NPQ2;
+
+
+    void tryRotateIPieceLeft(int player);
+    void tryRotateIPieceRight(int player);
+
+    void initOnePlayerGame();
 
 public:
 
     explicit GameState(sf::RenderWindow* pWindow);
 
-    void update(Input input);
+    void update(const Input& input);
 
     void setMode(int newMode);
     int getMode() const;
@@ -68,44 +83,49 @@ public:
     void processInputs(const Input& input);
 
     Board& getBoardState();
+    Board& getBoard2State();
     std::shared_ptr<Piece> getPieceState();
+    std::shared_ptr<Piece> getPiece2State();
     GhostPiece& getGhostPieceState();
+    GhostPiece& getGhostPiece2State();
     Holder& getHolderState();
+    Holder& getHolder2State();
     NextPieceQueue& getNPQState();
+    NextPieceQueue& getNPQ2State();
     Menu& getMenuState();
 
-    void upAction();
-    void downAction();
-    void leftAction();
-    void rightAction();
-    void selectAction();
-    void rotateLeftAction();
-    void rotateRightAction();
-    void dropAction();
-    void holdAction();
+    void upAction(int player);
+    void downAction(int player);
+    void leftAction(int player);
+    void rightAction(int player);
+    void selectAction(int player);
+    void rotateLeftAction(int player);
+    void rotateRightAction(int player);
+    void dropAction(int player);
+    void holdAction(int player);
     void toggleMenuAction();
     void closeMenuAction();
 
-    void spawnNewPiece();
+    void spawnNewPiece(int player);
 
-    bool pieceCanMove(int dRow, int dCol);
+    bool pieceCanMove(int player, int dRow, int dCol);
 
-    void movePieceLeft();
-    void movePieceRight();
-    void movePieceUp();
-    void movePieceDown();
+    void movePieceLeft(int player);
+    void movePieceRight(int player);
+    void movePieceUp(int player);
+    void movePieceDown(int player);
 
-    void placePiece();
-    void dropPiece();
+    void placePiece(int player);
+    void dropPiece(int player);
 
-    bool pieceCollides();
+    bool pieceCollides(int player);
 
-    void tryRotatePieceLeft();
-    void tryRotatePieceRight();
+    void tryRotatePieceLeft(int player);
+    void tryRotatePieceRight(int player);
 
-    void updateGhostPiece();
+    void updateGhostPiece(int player);
 
-    void holdPiece();
+    void holdPiece(int player);
 
 };
 

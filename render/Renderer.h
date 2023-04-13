@@ -15,11 +15,11 @@ class Renderer
     sf::RenderWindow* pWindow;
     sf::Font mainFont;
 
-    void drawTile(Tile tile);
+    void drawTile(Tile tile, float boardX);
 
     void drawTile(int tileType, float xPos, float yPos, float scale);
 
-    void drawGhostTile(Tile tile);
+    void drawGhostTile(Tile tile, float boardX);
 
 public:
     explicit Renderer(sf::RenderWindow* pWindow);
@@ -28,19 +28,19 @@ public:
 
     void drawMainMenu(GameState gameState);
     void drawOnePlayerGame(GameState gameState);
-    void drawTwoPlayerGame();
+    void drawTwoPlayerGame(GameState gameState);
 
-    void drawBoard(const Board& board);
+    void drawBoard(const Board& board, float xPos, float yPos);
 
-    void drawPiece(const std::shared_ptr<Piece>& piece);
+    void drawPiece(const std::shared_ptr<Piece>& piece, float boardX);
 
-    void drawGhostPiece(const GhostPiece& ghostPiece);
+    void drawGhostPiece(const GhostPiece& ghostPiece, float boardX);
 
-    void drawUIPiece(const std::shared_ptr<Piece>& pPiece, float xPos, float yPos, float scale);
+    void drawUIPiece(const std::shared_ptr<Piece>& pPiece, float pieceX, float pieceY, float scale);
 
-    void drawPieceHolder(const Holder& holder);
+    void drawPieceHolder(const Holder& holder, float boardX, int player);
 
-    void drawNPQ(const NextPieceQueue& NPQ);
+    void drawNPQ(const NextPieceQueue& NPQ, float boardX, int mode, int player);
 
     void drawMenu(Menu& menu);
 
