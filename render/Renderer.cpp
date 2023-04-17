@@ -64,9 +64,11 @@ void Renderer::drawOnePlayerGame(GameState gameState)
     Holder& holder = gameState.getHolderState();
     NextPieceQueue& NPQ = gameState.getNPQState();
     Menu& menu = gameState.getMenuState();
+    int score = gameState.getScoreState();
 
     float boardX = WINDOW_WIDTH / 2.0;
     float boardY = WINDOW_HEIGHT / 2.0;
+    float boardBottomY = boardY + BOARD_RENDER_HEIGHT / 2.0;
 
     //Draw board pieces
     drawBoard(board, boardX, boardY);
@@ -82,6 +84,9 @@ void Renderer::drawOnePlayerGame(GameState gameState)
 
     //Draw next piece queue
     drawNPQ(NPQ, boardX, ONE_PLAYER_GAME, PLAYER_ONE);
+
+    //Draw score
+    drawScore(score, boardX, boardBottomY);
 
     //Draw the menu
     drawMenu(menu);
@@ -99,12 +104,16 @@ void Renderer::drawTwoPlayerGame(GameState gameState)
     Holder& holder2 = gameState.getHolder2State();
     NextPieceQueue& NPQ1 = gameState.getNPQState();
     NextPieceQueue& NPQ2 = gameState.getNPQ2State();
+    unsigned long int score = gameState.getScoreState();
+    unsigned long int score2 = gameState.getScore2State();
     Menu& menu = gameState.getMenuState();
 
     float board1X = WINDOW_WIDTH / 3.0;
     float board1Y = WINDOW_HEIGHT / 2.0;
+    float board1BottomY = board1Y + BOARD_RENDER_HEIGHT / 2.0;
     float board2X = WINDOW_WIDTH * 2.0 / 3.0;
     float board2Y = WINDOW_HEIGHT / 2.0;
+    float board2BottomY = board2Y + BOARD_RENDER_HEIGHT / 2.0;
 
     //Draw boards
     drawBoard(board1, board1X, board1Y);
@@ -125,6 +134,10 @@ void Renderer::drawTwoPlayerGame(GameState gameState)
     //Draw next piece queues
     drawNPQ(NPQ1, board1X, TWO_PLAYER_GAME, PLAYER_ONE);
     drawNPQ(NPQ2, board2X, TWO_PLAYER_GAME, PLAYER_TWO);
+
+    //Draw scores
+    drawScore(score, board1X, board1BottomY);
+    drawScore(score2, board2X, board2BottomY);
 
     //Draw menu
     drawMenu(menu);
@@ -353,9 +366,6 @@ void Renderer::drawNPQ(const NextPieceQueue& NPQ, float boardX, int mode, int pl
 
     }
 
-
-
-
     //Draw bounding box
     sf::Vector2f NPQRenderV(TILE_RENDER_WIDTH * 4.0, TILE_RENDER_HEIGHT * 4.0 * 2.0);
     sf::RectangleShape NPQRender(NPQRenderV);
@@ -506,9 +516,21 @@ void Renderer::drawMenu(Menu& menu)
                                  buttonTextV.top + buttonTextV.height / 2.0);
             buttonText.setPosition(buttonX, buttonY);
             pWindow->draw(buttonText);
-
-
         }
     }
+}
+
+void Renderer::drawScore(unsigned long int score, float boardX, float boardBottomY)
+{
+    sf::Text scoreText;
+    scoreText.setFont(mainFont);
+    scoreText.setString(std::to_string(score));
+    scoreText.setFillColor(sf::Color::Black);
+    scoreText.setCharacterSize(TEXT_SIZE);
+    sf::FloatRect scoreTextV = scoreText.getGlobalBounds();
+    scoreText.setOrigin(scoreTextV.left + scoreTextV.width / 2.0,
+                        scoreTextV.top + scoreTextV.height / 2.0);
+    scoreText.setPosition(boardX, boardBottomY + TILE_RENDER_HEIGHT * 1.0);
+    pWindow->draw(scoreText);
 }
 

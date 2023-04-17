@@ -43,10 +43,27 @@ class GameState
     Menu pauseMenu;
     Menu mainMenu;
 
-    sf::Clock clock;
-    sf::Clock clock2;
+    sf::Clock gravityClock;
+    sf::Clock gravityClock2;
+    sf::Clock inputDelayClock;
+    sf::Clock inputDelayClock2;
+    sf::Clock inputRepeatClock;
+    sf::Clock inputRepeatClock2;
     sf::Time gravityTime;
     sf::Time gravityTime2;
+    sf::Time inputDelayTime;
+    sf::Time inputDelayTime2;
+    sf::Time inputRepeatTime;
+    sf::Time inputRepeatTime2;
+
+    bool keyPressed;
+    bool buttonPressed;
+    bool joystickEngaged;
+
+
+    unsigned long int score;
+    unsigned long int score2;
+
     Bag bag;
     Bag bag2;
 
@@ -66,6 +83,13 @@ class GameState
     void tryRotateIPieceRight(int player);
 
     void initOnePlayerGame();
+
+    void runRepeatableKeyInputs(int player);
+    void runRepeatedJoystickInputs(int player);
+
+    void runKeyInputs(int player);
+    void runButtonInputs(int player);
+    void runJoystickInputs(int player);
 
 public:
 
@@ -93,6 +117,8 @@ public:
     NextPieceQueue& getNPQState();
     NextPieceQueue& getNPQ2State();
     Menu& getMenuState();
+    unsigned long int getScoreState();
+    unsigned long int getScore2State();
 
     void upAction(int player);
     void downAction(int player);
@@ -105,6 +131,8 @@ public:
     void holdAction(int player);
     void toggleMenuAction();
     void closeMenuAction();
+
+    void addToScore(int player, unsigned long int dScore);
 
     void spawnNewPiece(int player);
 

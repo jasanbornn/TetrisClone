@@ -44,6 +44,8 @@ public:
 
     void drawMenu(Menu& menu);
 
+    void drawScore(unsigned long int score, float boardX, float boardBottomY);
+
 
 };
 

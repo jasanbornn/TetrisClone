@@ -34,7 +34,7 @@ public:
 
     void addPiece(Piece piece);
 
-    void clearLines();
+    int clearLines();
 };
 
 
