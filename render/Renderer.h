@@ -56,7 +56,11 @@ public:
 
     void drawScore(unsigned long int score, float boardX, float boardBottomY);
 
+    void drawLevelInfo(int mode, float board1X, Player& player);
+
     void drawGameOverSplash(GameState gameState, Player& player1, Player& player2);
+
+
 
 
 };

@@ -10,7 +10,7 @@ int main()
     srand(seed);
 
     // create the window
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Tetris Clone", sf::Style::Default);
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Tetris Clone", sf::Style::Fullscreen);
 
     InputHandler inputHandler(&window);
     GameState gameState(&window);

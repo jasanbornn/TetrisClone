@@ -80,7 +80,7 @@ void GameState::update(const Input& input)
         {
             if (pauseMenu.getStatus() == MENU_CLOSED)
             {
-                if (player1.getGravityTime().asSeconds() >= 1.0)
+                if (player1.getGravityTime().asMilliseconds() > player1.getGravityDelay())
                 {
                     if (pieceCanMove(player1, 1, 0))
                     {
@@ -103,7 +103,7 @@ void GameState::update(const Input& input)
         {
             if (pauseMenu.getStatus() == MENU_CLOSED)
             {
-                if (player1.getGravityTime().asSeconds() >= 1.0)
+                if (player1.getGravityTime().asMilliseconds() > player1.getGravityDelay())
                 {
                     if (pieceCanMove(player1, 1, 0))
                     {
@@ -113,7 +113,7 @@ void GameState::update(const Input& input)
                 }
                 updateGhostPiece(player1);
 
-                if (player2.getGravityTime().asSeconds() >= 1.0)
+                if (player2.getGravityTime().asMilliseconds() > player2.getGravityDelay())
                 {
                     if (pieceCanMove(player2, 1, 0))
                     {
@@ -787,6 +787,7 @@ void GameState::placePiece(Player& player)
             addedScore = addedScore * 2;
         }
         player.addToScore(addedScore);
+        player.addToLinesCleared(numLines);
     }
 }
 

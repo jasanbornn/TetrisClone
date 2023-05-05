@@ -104,6 +104,9 @@ void Renderer::drawOnePlayerGame(GameState gameState)
 
     //Draw game over splash
     drawGameOverSplash(gameState, player1, player1);
+
+    //Draw line and level info
+    drawLevelInfo(ONE_PLAYER_GAME, boardX, player1);
 }
 
 void Renderer::drawTwoPlayerGame(GameState gameState)
@@ -161,6 +164,10 @@ void Renderer::drawTwoPlayerGame(GameState gameState)
 
     //Draw game over splash
     drawGameOverSplash(gameState, player1, player2);
+
+    //Draw line and level info
+    drawLevelInfo(TWO_PLAYER_GAME,board1X, player1);
+    drawLevelInfo(TWO_PLAYER_GAME, board2X, player2);
 }
 
 void Renderer::drawTile(Tile tile, float boardX)
@@ -600,12 +607,12 @@ void Renderer::drawGameOverSplash(GameState gameState, Player& player1, Player& 
 
         float winTextX = gameOverX;
         float winTextY = gameOverY + gameOverTextV.height;
-        if(gameState.getMode() == TWO_PLAYER_GAME)
+        if (gameState.getMode() == TWO_PLAYER_GAME)
         {
             //"Player x Wins!"
             sf::Text winText;
             winText.setFont(mainFont);
-            if(player1.getScore() > player2.getScore())
+            if (player1.getScore() > player2.getScore())
             {
                 winText.setString("Player 1 Wins!");
             }
@@ -627,7 +634,7 @@ void Renderer::drawGameOverSplash(GameState gameState, Player& player1, Player& 
             pWindow->draw(winText);
         }
 
-        if(gameState.getGameOverDelayTime().asMilliseconds() > GAME_OVER_DELAY)
+        if (gameState.getGameOverDelayTime().asMilliseconds() > GAME_OVER_DELAY)
         {
             //"Press any key to continue
             sf::Text continueText;
@@ -638,7 +645,7 @@ void Renderer::drawGameOverSplash(GameState gameState, Player& player1, Player& 
             sf::FloatRect continueTextV = continueText.getGlobalBounds();
             continueText.setOrigin(continueTextV.left + continueTextV.width / 2.0,
                                    continueTextV.top + continueTextV.height / 2.0);
-            if(gameState.getMode() == ONE_PLAYER_GAME)
+            if (gameState.getMode() == ONE_PLAYER_GAME)
             {
                 continueText.setPosition(gameOverX, gameOverY + gameOverTextV.height);
             }
@@ -649,4 +656,70 @@ void Renderer::drawGameOverSplash(GameState gameState, Player& player1, Player& 
             pWindow->draw(continueText);
         }
     }
+}
+
+void Renderer::drawLevelInfo(int mode, float boardX, Player& player)
+{
+
+    float infoTextX, infoTextY;
+    if (mode == ONE_PLAYER_GAME)
+    {
+        // 1 tile away from left edge of board
+        infoTextX = boardX - (BOARD_RENDER_WIDTH / 2.0) - (TILE_RENDER_WIDTH * 3.0);
+
+        // 2 tiles away from top edge of board
+        infoTextY = (WINDOW_HEIGHT / 2.0) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * 18.0);
+    }
+    else
+    {
+        if (player.getPlayerNumber() == PLAYER_ONE)
+        {
+            // 1 tile away from left edge of board
+            infoTextX = boardX - (BOARD_RENDER_WIDTH / 2.0) - (TILE_RENDER_WIDTH * 3.0);
+
+            // 8 tiles away from top edge of board
+            infoTextY = (WINDOW_HEIGHT / 2.0) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * 18.0);
+        }
+        else
+        {
+            // 1 tile away from right edge of board
+            infoTextX = boardX + (BOARD_RENDER_WIDTH / 2.0) + (TILE_RENDER_WIDTH * 3.0);
+
+            // 8 tiles away from top edge of board
+            infoTextY = (WINDOW_HEIGHT / 2.0) - (BOARD_RENDER_HEIGHT / 2.0) + (TILE_RENDER_HEIGHT * 18.0);
+        }
+
+    }
+
+    //Draw bounding box
+    sf::Vector2f NPQRenderV(TILE_RENDER_WIDTH * 4.0, TILE_RENDER_HEIGHT * 4.0 * 2.0);
+    sf::RectangleShape NPQRender(NPQRenderV);
+    NPQRender.setOrigin(NPQRenderV.x / 2.0, NPQRenderV.y / 2.0);
+    NPQRender.setPosition(infoTextX, infoTextY);
+    NPQRender.setFillColor(sf::Color(0xCCCCCCAA));
+    NPQRender.setOutlineColor(sf::Color::Blue);
+    NPQRender.setOutlineThickness(2.0);
+//    pWindow->draw(NPQRender);
+
+    //Text "LEVEL: XX"
+    sf::Text levelText;
+    levelText.setFont(mainFont);
+    levelText.setString("LEVEL: " + std::to_string(player.getLevel()));
+    levelText.setCharacterSize(TEXT_SIZE);
+    levelText.setFillColor(sf::Color::Black);
+    sf::FloatRect levelTextV = levelText.getLocalBounds();
+    levelText.setOrigin(levelTextV.left + levelTextV.width / 2.0, levelTextV.top + levelTextV.height / 2.0);
+    levelText.setPosition(infoTextX, infoTextY);
+    pWindow->draw(levelText);
+
+    //Text "LINES: XX"
+    sf::Text linesText;
+    linesText.setFont(mainFont);
+    linesText.setString("LINES: " + std::to_string(player.getLinesCleared()));
+    linesText.setCharacterSize(TEXT_SIZE);
+    linesText.setFillColor(sf::Color::Black);
+    sf::FloatRect linesTextV = linesText.getLocalBounds();
+    linesText.setOrigin(linesTextV.left + linesTextV.width / 2.0, linesTextV.top + linesTextV.height / 2.0);
+    linesText.setPosition(infoTextX, infoTextY + linesTextV.height * 1.5);
+    pWindow->draw(linesText);
 }

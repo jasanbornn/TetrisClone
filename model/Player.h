@@ -26,6 +26,9 @@ class Player
     sf::Time inputRepeatTime;
 
     unsigned long int score;
+    unsigned long int linesCleared;
+    unsigned long int level;
+    unsigned long int gravityDelay;
     int playerNumber;
     bool donePlaying;
     Bag bag;
@@ -40,6 +43,8 @@ public:
     Player(int playerNumber);
 
     void addToScore(unsigned long int dScore);
+
+    void addToLinesCleared(unsigned long int dLines);
 
     void restartGravityClock();
 
@@ -60,6 +65,10 @@ public:
     NextPieceQueue& getNPQ();
 
     unsigned long int getScore();
+
+    unsigned long int getLevel();
+    unsigned long int getLinesCleared();
+    unsigned long int getGravityDelay();
 
     int getPlayerNumber() const;
 

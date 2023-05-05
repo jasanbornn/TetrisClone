@@ -16,6 +16,9 @@ Player::Player(int playerNumber)
     this->holder = Holder();
     this->NPQ = NextPieceQueue();
     this->score = 0;
+    this->linesCleared = 0;
+    this->level = 1;
+    this->gravityDelay = getGravityDelay();
     this->donePlaying = false;
 
     for (int i = 0; i < NPQ.size(); i++)
@@ -27,6 +30,12 @@ Player::Player(int playerNumber)
 void Player::addToScore(unsigned long int dScore)
 {
     this->score += dScore;
+}
+
+void Player::addToLinesCleared(unsigned long int dLines)
+{
+    this->linesCleared += dLines;
+    this->level = linesCleared / 10 + 1;
 }
 
 void Player::restartGravityClock()
@@ -100,6 +109,30 @@ int Player::getPlayerNumber() const
 unsigned long int Player::getScore()
 {
     return this->score;
+}
+
+unsigned long int Player::getLevel()
+{
+    return this->level;
+}
+
+unsigned long int Player::getLinesCleared()
+{
+    return this->linesCleared;
+}
+
+unsigned long int Player::getGravityDelay()
+{
+    if(this->level >= 20)
+    {
+        this->gravityDelay = (1000 / 20);
+    }
+    else
+    {
+        this->gravityDelay = (1000 / level);
+    }
+
+    return this->gravityDelay;
 }
 
 bool Player::isDonePlaying()
