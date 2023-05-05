@@ -21,9 +21,11 @@ class Player
     sf::Clock gravityClock;
     sf::Clock inputDelayClock;
     sf::Clock inputRepeatClock;
+    sf::Clock groundedClock;
     sf::Time gravityTime;
     sf::Time inputDelayTime;
     sf::Time inputRepeatTime;
+    sf::Time groundedTime;
 
     unsigned long int score;
     unsigned long int linesCleared;
@@ -52,6 +54,8 @@ public:
 
     void restartInputRepeatClock();
 
+    void restartGroundedClock();
+
     GhostPiece& getGhostPiece();
 
     Bag& getBag();
@@ -67,7 +71,9 @@ public:
     unsigned long int getScore();
 
     unsigned long int getLevel();
+
     unsigned long int getLinesCleared();
+
     unsigned long int getGravityDelay();
 
     int getPlayerNumber() const;
@@ -77,6 +83,8 @@ public:
     sf::Time& getInputDelayTime();
 
     sf::Time& getInputRepeatTime();
+
+    sf::Time& getGroundedTime();
 
     bool isDonePlaying();
 

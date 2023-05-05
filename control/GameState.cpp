@@ -80,6 +80,18 @@ void GameState::update(const Input& input)
         {
             if (pauseMenu.getStatus() == MENU_CLOSED)
             {
+                if (pieceCanMove(player1, 1, 0))
+                {
+                    player1.restartGroundedClock();
+                }
+                else
+                {
+                    if (player1.getGroundedTime().asMilliseconds() > 500 && !player1.isDonePlaying())
+                    {
+                        placePiece(player1);
+                    }
+                }
+
                 if (player1.getGravityTime().asMilliseconds() > player1.getGravityDelay())
                 {
                     if (pieceCanMove(player1, 1, 0))
@@ -103,6 +115,18 @@ void GameState::update(const Input& input)
         {
             if (pauseMenu.getStatus() == MENU_CLOSED)
             {
+                if (pieceCanMove(player1, 1, 0))
+                {
+                    player1.restartGroundedClock();
+                }
+                else
+                {
+                    if (player1.getGroundedTime().asMilliseconds() > 500 && !player1.isDonePlaying())
+                    {
+                        placePiece(player1);
+                    }
+                }
+
                 if (player1.getGravityTime().asMilliseconds() > player1.getGravityDelay())
                 {
                     if (pieceCanMove(player1, 1, 0))
@@ -112,6 +136,19 @@ void GameState::update(const Input& input)
                     }
                 }
                 updateGhostPiece(player1);
+
+
+                if (pieceCanMove(player2, 1, 0))
+                {
+                    player2.restartGroundedClock();
+                }
+                else
+                {
+                    if (player2.getGroundedTime().asMilliseconds() > 500 && !player2.isDonePlaying())
+                    {
+                        placePiece(player2);
+                    }
+                }
 
                 if (player2.getGravityTime().asMilliseconds() > player2.getGravityDelay())
                 {
@@ -593,6 +630,7 @@ void GameState::rotateLeftAction(Player& player)
 {
     if (pauseMenu.getStatus() == MENU_CLOSED && !player.isDonePlaying())
     {
+        player.restartGroundedClock();
         if (!pieceCanMove(player, 1, 0))
         {
             tryRotatePieceLeft(player);
@@ -612,6 +650,7 @@ void GameState::rotateRightAction(Player& player)
 {
     if (pauseMenu.getStatus() == MENU_CLOSED && !player.isDonePlaying())
     {
+        player.restartGroundedClock();
         if (!pieceCanMove(player, 1, 0))
         {
             tryRotatePieceRight(player);

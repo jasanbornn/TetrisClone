@@ -53,6 +53,10 @@ void Player::restartInputRepeatClock()
     this->inputRepeatClock.restart();
 }
 
+void Player::restartGroundedClock()
+{
+    this->groundedClock.restart();
+}
 sf::Time& Player::getGravityTime()
 {
     this->gravityTime = this->gravityClock.getElapsedTime();
@@ -69,6 +73,12 @@ sf::Time& Player::getInputRepeatTime()
 {
     this->inputRepeatTime = this->inputRepeatClock.getElapsedTime();
     return inputRepeatTime;
+}
+
+sf::Time& Player::getGroundedTime()
+{
+    this->groundedTime = this->groundedClock.getElapsedTime();
+    return groundedTime;
 }
 
 GhostPiece& Player::getGhostPiece()
