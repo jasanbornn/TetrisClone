@@ -21,7 +21,7 @@
 #define RIGHT_STICK_BUTTON 10
 
 
-GameState::GameState(sf::RenderWindow* pWindow) : bag(), bag2()
+GameState::GameState(sf::RenderWindow* pWindow) : player1(PLAYER_ONE), player2(PLAYER_TWO)
 {
     this->pWindow = pWindow;
 
@@ -31,32 +31,7 @@ GameState::GameState(sf::RenderWindow* pWindow) : bag(), bag2()
     this->buttonPressed = false;
     this->joystickEngaged = false;
 
-
-    this->board = Board();
-    this->pPiece = bag.getPiece();
-    this->ghostPiece = GhostPiece();
-    this->holder = Holder();
-    this->NPQ = NextPieceQueue();
-    this->score = 0;
-
-    this->board2 = Board();
-    this->pPiece2 = bag2.getPiece();
-    this->ghostPiece2 = GhostPiece();
-    this->holder2 = Holder();
-    this->NPQ2 = NextPieceQueue();
-    this->score2 = 0;
-
-    //Fill the Next Piece Queue
-    for (int i = 0; i < NPQ.size(); i++)
-    {
-        NPQ.push(bag.getPiece());
-    }
-
-    //Fill 2nd player Next Piece Queue
-    for (int i = 0; i < NPQ2.size(); i++)
-    {
-        NPQ2.push(bag2.getPiece());
-    }
+    this->gameOver = false;
 
     //Initialize main menu
     mainMenu = Menu(500, 500);
@@ -86,8 +61,6 @@ GameState::GameState(sf::RenderWindow* pWindow) : bag(), bag2()
     }));
     pauseMenu.addButton(Button("MAIN MENU", [this]() -> void
     {
-        mainMenu.setStatus(MENU_OPEN);
-        pauseMenu.setStatus(MENU_CLOSED);
         this->startMainMenu();
     }));
 
@@ -95,65 +68,71 @@ GameState::GameState(sf::RenderWindow* pWindow) : bag(), bag2()
 
 void GameState::update(const Input& input)
 {
-
-    if (this->mode == MAIN_MENU)
+    if (!gameOver)
     {
 
-    }
+        if (this->mode == MAIN_MENU)
+        {
 
-    if (this->mode == ONE_PLAYER_GAME)
-    {
-        if (pauseMenu.getStatus() == MENU_CLOSED)
-        {
-            gravityTime = gravityClock.getElapsedTime();
-            if (gravityTime.asSeconds() >= 1.0)
-            {
-                if (pieceCanMove(PLAYER_ONE, 1, 0))
-                {
-                    movePieceDown(PLAYER_ONE);
-                    gravityClock.restart();
-                }
-            }
-            updateGhostPiece(PLAYER_ONE);
-        }
-        else
-        {
-            //fix time bug
         }
 
-    }
-
-    if (this->mode == TWO_PLAYER_GAME)
-    {
-        if (pauseMenu.getStatus() == MENU_CLOSED)
+        if (this->mode == ONE_PLAYER_GAME)
         {
-            gravityTime = gravityClock.getElapsedTime();
-            if (gravityTime.asSeconds() >= 1.0)
+            if (pauseMenu.getStatus() == MENU_CLOSED)
             {
-                if (pieceCanMove(PLAYER_ONE, 1, 0))
+                if (player1.getGravityTime().asSeconds() >= 1.0)
                 {
-                    movePieceDown(PLAYER_ONE);
-                    gravityClock.restart();
+                    if (pieceCanMove(player1, 1, 0))
+                    {
+                        movePieceDown(player1.getPPiece());
+                        player1.restartGravityClock();
+                    }
                 }
+                updateGhostPiece(player1);
             }
-            updateGhostPiece(PLAYER_ONE);
 
-            gravityTime2 = gravityClock2.getElapsedTime();
-            if (gravityTime2.asSeconds() >= 1.0)
+            if (player1.isDonePlaying())
             {
-                if (pieceCanMove(PLAYER_TWO, 1, 0))
-                {
-                    movePieceDown(PLAYER_TWO);
-                    gravityClock2.restart();
-                }
+                this->gameOver = true;
+                this->gameOverDelayClock.restart();
             }
-            updateGhostPiece(PLAYER_TWO);
+
         }
-    }
 
+        if (this->mode == TWO_PLAYER_GAME)
+        {
+            if (pauseMenu.getStatus() == MENU_CLOSED)
+            {
+                if (player1.getGravityTime().asSeconds() >= 1.0)
+                {
+                    if (pieceCanMove(player1, 1, 0))
+                    {
+                        movePieceDown(player1.getPPiece());
+                        player1.restartGravityClock();
+                    }
+                }
+                updateGhostPiece(player1);
+
+                if (player2.getGravityTime().asSeconds() >= 1.0)
+                {
+                    if (pieceCanMove(player2, 1, 0))
+                    {
+                        movePieceDown(player2.getPPiece());
+                        player2.restartGravityClock();
+                    }
+                }
+                updateGhostPiece(player2);
+            }
+
+            if (player1.isDonePlaying() && player2.isDonePlaying())
+            {
+                this->gameOver = true;
+                this->gameOverDelayClock.restart();
+            }
+        }
+
+    }
     processInputs(input);
-
-
 }
 
 void GameState::setMode(int newMode)
@@ -166,27 +145,33 @@ int GameState::getMode() const
     return this->mode;
 }
 
+sf::Time GameState::getGameOverDelayTime()
+{
+    this->gameOverDelayTime = gameOverDelayClock.getElapsedTime();
+    return this->gameOverDelayTime;
+}
+
+bool GameState::isGameOver()
+{
+    return this->gameOver;
+}
+
 void GameState::startMainMenu()
 {
+    this->gameOver = false;
+    mainMenu.setStatus(MENU_OPEN);
+    pauseMenu.setStatus(MENU_CLOSED);
     this->setMode(MAIN_MENU);
 }
 
 void GameState::initOnePlayerGame()
 {
-    this->board = Board();
-    this->pPiece = bag.getPiece();
-    this->ghostPiece = GhostPiece();
-    this->holder = Holder();
-    this->NPQ = NextPieceQueue();
-    this->score = 0;
 
-    //Fill the Next Piece Queue
-    for (int i = 0; i < NPQ.size(); i++)
-    {
-        NPQ.push(bag.getPiece());
-    }
+    this->gameOver = false;
 
-    gravityClock.restart();
+    player1 = Player(PLAYER_ONE);
+
+    player1.restartGravityClock();
 }
 
 void GameState::startOnePlayerGame()
@@ -199,22 +184,9 @@ void GameState::startTwoPlayerGame()
 {
     initOnePlayerGame();
 
-    this->gravityTime2 = gravityClock2.getElapsedTime();
+    player2 = Player(PLAYER_TWO);
 
-    this->board2 = Board();
-    this->pPiece2 = bag2.getPiece();
-    this->ghostPiece2 = GhostPiece();
-    this->holder2 = Holder();
-    this->NPQ2 = NextPieceQueue();
-    this->score2 = 0;
-
-    //Fill 2nd player Next Piece Queue
-    for (int i = 0; i < NPQ2.size(); i++)
-    {
-        NPQ2.push(bag2.getPiece());
-    }
-
-    gravityClock2.restart();
+    player2.restartGravityClock();
 
     this->setMode(TWO_PLAYER_GAME);
 }
@@ -222,7 +194,7 @@ void GameState::startTwoPlayerGame()
 void GameState::processInputs(const Input& input)
 {
     std::vector<sf::Event> events = input.getEvents();
-    int player = PLAYER_ONE;
+    bool singleInput = true;
 
     for (int i = 0; i < events.size(); i++)
     {
@@ -243,6 +215,20 @@ void GameState::processInputs(const Input& input)
             case sf::Event::JoystickMoved:
                 //Joystick axis events
 
+                //Check for previously engaged joystick to avoid duplicate movement
+                if (joystickEngaged)
+                {
+                    if (sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) == 0 &&
+                        sf::Joystick::getAxisPosition(0, sf::Joystick::PovY) == 0)
+                    {
+                        joystickEngaged = false;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
                 if (sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) == 0 &&
                     sf::Joystick::getAxisPosition(0, sf::Joystick::PovY) == 0)
                 {
@@ -253,20 +239,32 @@ void GameState::processInputs(const Input& input)
                     joystickEngaged = true;
                 }
 
-                player = PLAYER_ONE;
-
-                if (mode == TWO_PLAYER_GAME)
+                if (mode == ONE_PLAYER_GAME || mode == MAIN_MENU)
                 {
-                    player = PLAYER_TWO;
+                    runJoystickInputs(player1);
+                }
+                else if (mode == TWO_PLAYER_GAME)
+                {
+                    runJoystickInputs(player2);
                 }
 
-                runJoystickInputs(player);
 
                 break;
             case sf::Event::KeyPressed:
+
+                if (gameOver)
+                {
+                    this->gameOverDelayTime = gameOverDelayClock.getElapsedTime();
+                    if (gameOverDelayTime.asMilliseconds() > GAME_OVER_DELAY)
+                    {
+                        startMainMenu();
+                        return;
+                    }
+                }
+
                 if (!keyPressed)
                 {
-                    runKeyInputs(PLAYER_ONE);
+                    runKeyInputs(player1);
                     keyPressed = true;
                 }
                 break;
@@ -277,16 +275,31 @@ void GameState::processInputs(const Input& input)
 
             case sf::Event::JoystickButtonPressed:
 
-                player = PLAYER_ONE;
-                if (mode == TWO_PLAYER_GAME)
+                if (gameOver)
                 {
-                    player = PLAYER_TWO;
+                    this->gameOverDelayTime = gameOverDelayClock.getElapsedTime();
+                    if (gameOverDelayTime.asMilliseconds() > GAME_OVER_DELAY)
+                    {
+                        startMainMenu();
+                        return;
+                    }
                 }
 
-                if (!buttonPressed)
+                if (mode == ONE_PLAYER_GAME || mode == MAIN_MENU)
                 {
-                    runButtonInputs(player);
-                    buttonPressed = true;
+                    if (!buttonPressed)
+                    {
+                        runButtonInputs(player1);
+                        buttonPressed = true;
+                    }
+                }
+                else if (mode == TWO_PLAYER_GAME)
+                {
+                    if (!buttonPressed)
+                    {
+                        runButtonInputs(player2);
+                        buttonPressed = true;
+                    }
                 }
 
                 break;
@@ -304,54 +317,71 @@ void GameState::processInputs(const Input& input)
         }
     }
 
-    if (!this->keyPressed)
+    if (mode == ONE_PLAYER_GAME || mode == MAIN_MENU)
     {
-        inputDelayClock.restart();
-    }
-    else
-    {
-        inputDelayTime = inputDelayClock.getElapsedTime();
-        inputRepeatTime = inputRepeatClock.getElapsedTime();
-
-        if (inputDelayTime.asMilliseconds() > 200)
+        if (!this->keyPressed && !this->joystickEngaged)
         {
-            if (inputRepeatTime.asMilliseconds() > 50)
+            player1.restartInputDelayClock();
+        }
+        else
+        {
+            sf::Time inputDelayTime = player1.getInputDelayTime();
+            sf::Time inputRepeatTime = player1.getInputRepeatTime();
+
+            if (inputDelayTime.asMilliseconds() > 200)
             {
-                runRepeatableKeyInputs(PLAYER_ONE);
-                inputRepeatClock.restart();
+                if (inputRepeatTime.asMilliseconds() > 50)
+                {
+                    runRepeatableKeyInputs(player1);
+                    runRepeatableJoystickInputs(player1);
+                    player1.restartInputRepeatClock();
+                }
             }
         }
     }
-
-    if (!this->joystickEngaged)
+    else if (mode == TWO_PLAYER_GAME)
     {
-        inputDelayClock2.restart();
-    }
-    else
-    {
-        inputDelayTime2 = inputDelayClock2.getElapsedTime();
-        inputRepeatTime2 = inputRepeatClock2.getElapsedTime();
-
-        if (inputDelayTime2.asMilliseconds() > 200)
+        if (!this->keyPressed)
         {
-            if (inputRepeatTime2.asMilliseconds() > 50)
+            player1.restartInputDelayClock();
+        }
+        else
+        {
+            sf::Time inputDelayTime = player1.getInputDelayTime();
+            sf::Time inputRepeatTime = player1.getInputRepeatTime();
+
+            if (inputDelayTime.asMilliseconds() > 200)
             {
-                if (mode == ONE_PLAYER_GAME)
+                if (inputRepeatTime.asMilliseconds() > 50)
                 {
-                    runRepeatedJoystickInputs(PLAYER_ONE);
+                    runRepeatableKeyInputs(player1);
+                    player1.restartInputRepeatClock();
                 }
-                else
+            }
+        }
+
+        if (!this->joystickEngaged)
+        {
+            player2.restartInputDelayClock();
+        }
+        else
+        {
+            sf::Time inputDelayTime = player2.getInputDelayTime();
+            sf::Time inputRepeatTime = player2.getInputRepeatTime();
+
+            if (inputDelayTime.asMilliseconds() > 200)
+            {
+                if (inputRepeatTime.asMilliseconds() > 50)
                 {
-                    runRepeatedJoystickInputs(PLAYER_TWO);
+                    runRepeatableJoystickInputs(player2);
+                    player2.restartInputRepeatClock();
                 }
-                inputRepeatClock2.restart();
             }
         }
     }
-
 }
 
-void GameState::runKeyInputs(int player)
+void GameState::runKeyInputs(Player& player)
 {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
     {
@@ -391,7 +421,7 @@ void GameState::runKeyInputs(int player)
     runRepeatableKeyInputs(player);
 }
 
-void GameState::runRepeatableKeyInputs(int player)
+void GameState::runRepeatableKeyInputs(Player& player)
 {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
@@ -413,7 +443,7 @@ void GameState::runRepeatableKeyInputs(int player)
     }
 }
 
-void GameState::runButtonInputs(int player)
+void GameState::runButtonInputs(Player& player)
 {
     if (sf::Joystick::isButtonPressed(0, BUTTON_X))
     {
@@ -442,12 +472,12 @@ void GameState::runButtonInputs(int player)
     }
 }
 
-void GameState::runJoystickInputs(int player)
+void GameState::runJoystickInputs(Player& player)
 {
-    runRepeatedJoystickInputs(player);
+    runRepeatableJoystickInputs(player);
 }
 
-void GameState::runRepeatedJoystickInputs(int player)
+void GameState::runRepeatableJoystickInputs(Player& player)
 {
     if (sf::Joystick::getAxisPosition(0, sf::Joystick::PovY) < 0)
     {
@@ -470,7 +500,7 @@ void GameState::runRepeatedJoystickInputs(int player)
     }
 }
 
-void GameState::upAction(int player)
+void GameState::upAction(Player& player)
 {
     if (mode == MAIN_MENU)
     {
@@ -484,7 +514,7 @@ void GameState::upAction(int player)
 
 }
 
-void GameState::downAction(int player)
+void GameState::downAction(Player& player)
 {
     if (mode == MAIN_MENU)
     {
@@ -498,47 +528,48 @@ void GameState::downAction(int player)
         }
         else //if in game and not paused
         {
-            if (pieceCanMove(player, 1, 0))
+            if (!player.isDonePlaying())
             {
-                movePieceDown(player);
-                addToScore(player, 10);
-            }
-
-            if (player == PLAYER_ONE)
-            {
-                gravityClock.restart();
-            }
-            else
-            {
-                gravityClock2.restart();
+                if (pieceCanMove(player, 1, 0))
+                {
+                    movePieceDown(player.getPPiece());
+                    player.addToScore(10);
+                }
+                player.restartGravityClock();
             }
         }
     }
 }
 
-void GameState::leftAction(int player)
+void GameState::leftAction(Player& player)
 {
     if (pauseMenu.getStatus() == MENU_CLOSED)
     {
-        if (pieceCanMove(player, 0, -1))
+        if (!player.isDonePlaying())
         {
-            movePieceLeft(player);
+            if (pieceCanMove(player, 0, -1))
+            {
+                movePieceLeft(player.getPPiece());
+            }
         }
     }
 }
 
-void GameState::rightAction(int player)
+void GameState::rightAction(Player& player)
 {
     if (pauseMenu.getStatus() == MENU_CLOSED)
     {
-        if (pieceCanMove(player, 0, 1))
+        if (!player.isDonePlaying())
         {
-            movePieceRight(player);
+            if (pieceCanMove(player, 0, 1))
+            {
+                movePieceRight(player.getPPiece());
+            }
         }
     }
 }
 
-void GameState::selectAction(int player)
+void GameState::selectAction(Player& player)
 {
     if (mode == MAIN_MENU)
     {
@@ -558,16 +589,16 @@ void GameState::selectAction(int player)
 
 }
 
-void GameState::rotateLeftAction(int player)
+void GameState::rotateLeftAction(Player& player)
 {
-    if (pauseMenu.getStatus() == MENU_CLOSED)
+    if (pauseMenu.getStatus() == MENU_CLOSED && !player.isDonePlaying())
     {
         if (!pieceCanMove(player, 1, 0))
         {
             tryRotatePieceLeft(player);
             if (pieceCanMove(player, 1, 0))
             {
-                gravityClock.restart();
+                player.restartGravityClock();
             }
         }
         else
@@ -577,16 +608,16 @@ void GameState::rotateLeftAction(int player)
     }
 }
 
-void GameState::rotateRightAction(int player)
+void GameState::rotateRightAction(Player& player)
 {
-    if (pauseMenu.getStatus() == MENU_CLOSED)
+    if (pauseMenu.getStatus() == MENU_CLOSED && !player.isDonePlaying())
     {
         if (!pieceCanMove(player, 1, 0))
         {
             tryRotatePieceRight(player);
             if (pieceCanMove(player, 1, 0))
             {
-                gravityClock.restart();
+                player.restartGravityClock();
             }
         }
         else
@@ -596,17 +627,17 @@ void GameState::rotateRightAction(int player)
     }
 }
 
-void GameState::dropAction(int player)
+void GameState::dropAction(Player& player)
 {
-    if (pauseMenu.getStatus() == MENU_CLOSED)
+    if (pauseMenu.getStatus() == MENU_CLOSED && !player.isDonePlaying())
     {
         dropPiece(player);
     }
 }
 
-void GameState::holdAction(int player)
+void GameState::holdAction(Player& player)
 {
-    if (pauseMenu.getStatus() == MENU_CLOSED)
+    if (pauseMenu.getStatus() == MENU_CLOSED && !player.isDonePlaying())
     {
         holdPiece(player);
     }
@@ -629,54 +660,14 @@ void GameState::closeMenuAction()
     pauseMenu.setStatus(MENU_CLOSED);
 }
 
-Board& GameState::getBoardState()
+Player& GameState::getPlayer1State()
 {
-    return this->board;
+    return this->player1;
 }
 
-Board& GameState::getBoard2State()
+Player& GameState::getPlayer2State()
 {
-    return this->board2;
-}
-
-std::shared_ptr<Piece> GameState::getPieceState()
-{
-    return this->pPiece;
-}
-
-std::shared_ptr<Piece> GameState::getPiece2State()
-{
-    return this->pPiece2;
-}
-
-GhostPiece& GameState::getGhostPieceState()
-{
-    return this->ghostPiece;
-}
-
-GhostPiece& GameState::getGhostPiece2State()
-{
-    return this->ghostPiece2;
-}
-
-Holder& GameState::getHolderState()
-{
-    return this->holder;
-}
-
-Holder& GameState::getHolder2State()
-{
-    return this->holder2;
-}
-
-NextPieceQueue& GameState::getNPQState()
-{
-    return NPQ;
-}
-
-NextPieceQueue& GameState::getNPQ2State()
-{
-    return NPQ2;
+    return this->player2;
 }
 
 Menu& GameState::getMenuState()
@@ -694,54 +685,32 @@ Menu& GameState::getMenuState()
     return this->mainMenu;
 }
 
-unsigned long int GameState::getScoreState()
+//unsigned long int GameState::getScoreState()
+//{
+//    return this->score;
+//}
+//
+//unsigned long int GameState::getScore2State()
+//{
+//    return this->score2;
+//}
+
+void GameState::spawnNewPiece(Player& player)
 {
-    return this->score;
+    player.setPPiece(player.getNPQ().pop());
+    player.getNPQ().push(player.getBag().getPiece());
+    player.getHolder().enableHolding();
+
+    if (pieceCollides(player))
+    {
+        player.setDonePlaying(true);
+    }
 }
 
-unsigned long int GameState::getScore2State()
+bool GameState::pieceCanMove(Player& player, int dRow, int dCol)
 {
-    return this->score2;
-}
-
-void GameState::addToScore(int player, unsigned long int dScore)
-{
-    if (player == PLAYER_ONE)
-    {
-        this->score += dScore;
-    }
-    else
-    {
-        this->score2 += dScore;
-    }
-}
-
-void GameState::spawnNewPiece(int player)
-{
-    if (player == PLAYER_ONE)
-    {
-        pPiece = NPQ.pop();
-        NPQ.push(bag.getPiece());
-        holder.enableHolding();
-    }
-    else
-    {
-        pPiece2 = NPQ2.pop();
-        NPQ2.push(bag2.getPiece());
-        holder2.enableHolding();
-    }
-
-}
-
-bool GameState::pieceCanMove(int player, int dRow, int dCol)
-{
-    std::array<Tile, TILES_PER_PIECE> pieceTiles = pPiece->getTiles();
-    std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> boardTiles = board.getTiles();
-    if (player == PLAYER_TWO)
-    {
-        pieceTiles = pPiece2->getTiles();
-        boardTiles = board2.getTiles();
-    }
+    std::array<Tile, TILES_PER_PIECE> pieceTiles = player.getPPiece()->getTiles();
+    std::array<std::array<Tile, BOARD_WIDTH>, BOARD_HEIGHT> boardTiles = player.getBoard().getTiles();
 
     for (int i = 0; i < TILES_PER_PIECE; i++)
     {
@@ -764,71 +733,36 @@ bool GameState::pieceCanMove(int player, int dRow, int dCol)
     return true;
 }
 
-void GameState::movePieceLeft(int player)
+void GameState::movePieceLeft(const std::shared_ptr<Piece>& pPiece)
 {
-    if (player == PLAYER_ONE)
-    {
-        pPiece->move(0, -1);
-    }
-    else
-    {
-        pPiece2->move(0, -1);
-    }
+    pPiece->move(0, -1);
 }
 
-void GameState::movePieceRight(int player)
+void GameState::movePieceRight(const std::shared_ptr<Piece>& pPiece)
 {
-    if (player == PLAYER_ONE)
-    {
-        pPiece->move(0, 1);
-    }
-    else
-    {
-        pPiece2->move(0, 1);
-    }
+    pPiece->move(0, 1);
 }
 
-void GameState::movePieceUp(int player)
+void GameState::movePieceUp(const std::shared_ptr<Piece>& pPiece)
 {
-    if (player == PLAYER_ONE)
-    {
-        pPiece->move(-1, 0);
-    }
-    else
-    {
-        pPiece2->move(-1, 0);
-    }
+    pPiece->move(-1, 0);
 }
 
-void GameState::movePieceDown(int player)
+void GameState::movePieceDown(const std::shared_ptr<Piece>& pPiece)
 {
-    if (player == PLAYER_ONE)
-    {
-        pPiece->move(1, 0);
-    }
-    else
-    {
-        pPiece2->move(1, 0);
-    }
+    pPiece->move(1, 0);
 }
 
-bool GameState::pieceCollides(int player)
+bool GameState::pieceCollides(Player& player)
 {
-    std::shared_ptr<Piece> targetPiece = pPiece;
-    Board targetBoard = board;
-    if (player == PLAYER_TWO)
-    {
-        targetPiece = pPiece2;
-        targetBoard = board2;
-    }
 
-    for (Tile& tile: targetPiece->getTiles())
+    for (Tile& tile: player.getPPiece()->getTiles())
     {
         if (tile.getCol() < 0 || tile.getCol() >= BOARD_WIDTH || tile.getRow() < 0 || tile.getRow() >= BOARD_HEIGHT)
         {
             return true;
         }
-        else if (targetBoard.getTile(tile.getRow(), tile.getCol()).getTileType() != TILE_NULL)
+        else if (player.getBoard().getTile(tile.getRow(), tile.getCol()).getTileType() != TILE_NULL)
         {
             return true;
         }
@@ -836,22 +770,15 @@ bool GameState::pieceCollides(int player)
     return false;
 }
 
-void GameState::placePiece(int player)
+void GameState::placePiece(Player& player)
 {
-    std::shared_ptr<Piece>* targetPiece = &pPiece;
-    Board* targetBoard = &board;
-    if (player == PLAYER_TWO)
-    {
-        targetPiece = &pPiece2;
-        targetBoard = &board2;
-    }
 
-    for (Tile& tile: targetPiece->get()->getTiles())
+    for (Tile& tile: player.getPPiece()->getTiles())
     {
-        targetBoard->addTile(tile);
+        player.getBoard().addTile(tile);
     }
     spawnNewPiece(player);
-    int numLines = targetBoard->clearLines();
+    int numLines = player.getBoard().clearLines();
     if (numLines > 0)
     {
         int addedScore = 500;
@@ -859,75 +786,55 @@ void GameState::placePiece(int player)
         {
             addedScore = addedScore * 2;
         }
-        addToScore(player, addedScore);
+        player.addToScore(addedScore);
     }
 }
 
-void GameState::dropPiece(int player)
+void GameState::dropPiece(Player& player)
 {
     while (!pieceCollides(player))
     {
-        movePieceDown(player);
-        addToScore(player, 25);
+        movePieceDown(player.getPPiece());
+        player.addToScore(25);
     }
-    movePieceUp(player);
+    movePieceUp(player.getPPiece());
     placePiece(player);
 }
 
-void GameState::updateGhostPiece(int player)
+void GameState::updateGhostPiece(Player& player)
 {
-    std::shared_ptr<Piece>* targetPiece = &pPiece;
-    GhostPiece* targetGhostPiece = &ghostPiece;
-    if (player == PLAYER_TWO)
-    {
-        targetPiece = &pPiece2;
-        targetGhostPiece = &ghostPiece2;
-    }
 
     int dRow = 0;
 
     while (!pieceCollides(player))
     {
-        targetPiece->get()->move(1, 0);
+        player.getPPiece()->move(1, 0);
         dRow++;
     }
-    targetPiece->get()->move(-1, 0);
-    targetGhostPiece->update(targetPiece->get()->getTiles());
-    targetPiece->get()->move(-dRow + 1, 0);
+    player.getPPiece()->move(-1, 0);
+    player.getGhostPiece().update(player.getPPiece()->getTiles());
+    player.getPPiece()->move(-dRow + 1, 0);
 }
 
-void GameState::holdPiece(int player)
+void GameState::holdPiece(Player& player)
 {
-    std::shared_ptr<Piece>* targetPiece = &pPiece;
-    Holder* targetHolder = &holder;
-
-    if (player == PLAYER_TWO)
+    if (player.getHolder().canHold())
     {
-        targetPiece = &pPiece2;
-        targetHolder = &holder2;
-    }
+        player.setPPiece(player.getHolder().hold(player.getPPiece()));
 
-    if (targetHolder->canHold())
-    {
-        *targetPiece = targetHolder->hold(*targetPiece);
-
-        if (*targetPiece == nullptr)
+        if (player.getPPiece() == nullptr)
         {
             spawnNewPiece(player);
         }
 
-        targetHolder->disableHolding();
+        player.getHolder().disableHolding();
     }
 }
 
 
-void GameState::tryRotatePieceLeft(int player)
+void GameState::tryRotatePieceLeft(Player& player)
 {
-    std::shared_ptr<Piece> targetPiece = pPiece;
-    if (player == PLAYER_TWO)
-    {
-        targetPiece = pPiece2;
-    }
+    std::shared_ptr<Piece>& targetPiece = player.getPPiece();
 
     if (targetPiece->getType() == I_PIECE)
     {
@@ -1080,24 +987,13 @@ void GameState::tryRotatePieceLeft(int player)
 
     if (dRow != 0)
     {
-        if (player == PLAYER_ONE)
-        {
-            gravityClock.restart();
-        }
-        else
-        {
-            gravityClock2.restart();
-        }
+        player.restartGravityClock();
     }
 }
 
-void GameState::tryRotatePieceRight(int player)
+void GameState::tryRotatePieceRight(Player& player)
 {
-    std::shared_ptr<Piece> targetPiece = pPiece;
-    if (player == PLAYER_TWO)
-    {
-        targetPiece = pPiece2;
-    }
+    std::shared_ptr<Piece>& targetPiece = player.getPPiece();
 
     if (targetPiece->getType() == I_PIECE)
     {
@@ -1250,26 +1146,15 @@ void GameState::tryRotatePieceRight(int player)
 
     if (dRow != 0)
     {
-        if (player == PLAYER_ONE)
-        {
-            gravityClock.restart();
-        }
-        else
-        {
-            gravityClock2.restart();
-        }
+        player.restartGravityClock();
     }
 
 }
 
-void GameState::tryRotateIPieceLeft(int player)
+void GameState::tryRotateIPieceLeft(Player& player)
 {
 
-    std::shared_ptr<Piece> targetPiece = pPiece;
-    if (player == PLAYER_TWO)
-    {
-        targetPiece = pPiece2;
-    }
+    std::shared_ptr<Piece>& targetPiece = player.getPPiece();
 
     int dRow = 0;
     int dCol = 0;
@@ -1416,24 +1301,13 @@ void GameState::tryRotateIPieceLeft(int player)
 
     if (dRow != 0)
     {
-        if (player == PLAYER_ONE)
-        {
-            gravityClock.restart();
-        }
-        else
-        {
-            gravityClock2.restart();
-        }
+        player.restartGravityClock();
     }
 }
 
-void GameState::tryRotateIPieceRight(int player)
+void GameState::tryRotateIPieceRight(Player& player)
 {
-    std::shared_ptr<Piece> targetPiece = pPiece;
-    if (player == PLAYER_TWO)
-    {
-        targetPiece = pPiece2;
-    }
+    std::shared_ptr<Piece>& targetPiece = player.getPPiece();
 
     int dRow = 0;
     int dCol = 0;
@@ -1580,14 +1454,7 @@ void GameState::tryRotateIPieceRight(int player)
 
     if (dRow != 0)
     {
-        if (player == PLAYER_ONE)
-        {
-            gravityClock.restart();
-        }
-        else
-        {
-            gravityClock2.restart();
-        }
+        player.restartGravityClock();
     }
 
 }

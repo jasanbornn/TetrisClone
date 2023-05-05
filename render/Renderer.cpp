@@ -25,6 +25,13 @@ Renderer::Renderer(sf::RenderWindow* pWindow)
         std::cout << "Error loading font..." << "\n";
         pWindow->close();
     }
+
+    if (!logoTexture.loadFromFile("../images/mainLogo.png"))
+    {
+        std::cout << "Error loading mainLogo.png..." << "\n";
+        pWindow->close();
+    }
+    logoSprite.setTexture(logoTexture);
 }
 
 void Renderer::render(const GameState& gameState)
@@ -51,20 +58,24 @@ void Renderer::render(const GameState& gameState)
 
 void Renderer::drawMainMenu(GameState gameState)
 {
-    Menu& menu = gameState.getMenuState();
+//    drawMainLogo();
 
-    drawMenu(menu);
+    Menu& menu = gameState.getMenuState();
+    drawMenu(menu, (WINDOW_WIDTH / 2.0), (WINDOW_HEIGHT * 2.0 / 3.0), false);
 }
 
 void Renderer::drawOnePlayerGame(GameState gameState)
 {
-    Board& board = gameState.getBoardState();
-    std::shared_ptr<Piece> pPiece = gameState.getPieceState();
-    GhostPiece& ghostPiece = gameState.getGhostPieceState();
-    Holder& holder = gameState.getHolderState();
-    NextPieceQueue& NPQ = gameState.getNPQState();
+
+    Player& player1 = gameState.getPlayer1State();
+    Board& board = player1.getBoard();
+    std::shared_ptr<Piece> pPiece = player1.getPPiece();
+    GhostPiece& ghostPiece = player1.getGhostPiece();
+    Holder& holder = player1.getHolder();
+    NextPieceQueue& NPQ = player1.getNPQ();
+    unsigned long int score = player1.getScore();
     Menu& menu = gameState.getMenuState();
-    int score = gameState.getScoreState();
+
 
     float boardX = WINDOW_WIDTH / 2.0;
     float boardY = WINDOW_HEIGHT / 2.0;
@@ -89,23 +100,29 @@ void Renderer::drawOnePlayerGame(GameState gameState)
     drawScore(score, boardX, boardBottomY);
 
     //Draw the menu
-    drawMenu(menu);
+    drawMenu(menu, (WINDOW_WIDTH / 2.0), (WINDOW_HEIGHT / 2.0));
+
+    //Draw game over splash
+    drawGameOverSplash(gameState, player1, player1);
 }
 
 void Renderer::drawTwoPlayerGame(GameState gameState)
 {
-    Board& board1 = gameState.getBoardState();
-    Board& board2 = gameState.getBoard2State();
-    std::shared_ptr<Piece> pPiece1 = gameState.getPieceState();
-    std::shared_ptr<Piece> pPiece2 = gameState.getPiece2State();
-    GhostPiece& ghostPiece1 = gameState.getGhostPieceState();
-    GhostPiece& ghostPiece2 = gameState.getGhostPiece2State();
-    Holder& holder1 = gameState.getHolderState();
-    Holder& holder2 = gameState.getHolder2State();
-    NextPieceQueue& NPQ1 = gameState.getNPQState();
-    NextPieceQueue& NPQ2 = gameState.getNPQ2State();
-    unsigned long int score = gameState.getScoreState();
-    unsigned long int score2 = gameState.getScore2State();
+    Player& player1 = gameState.getPlayer1State();
+    Player& player2 = gameState.getPlayer2State();
+
+    Board& board1 = player1.getBoard();
+    Board& board2 = player2.getBoard();
+    std::shared_ptr<Piece> pPiece1 = player1.getPPiece();
+    std::shared_ptr<Piece> pPiece2 = player2.getPPiece();
+    GhostPiece& ghostPiece1 = player1.getGhostPiece();
+    GhostPiece& ghostPiece2 = player2.getGhostPiece();
+    Holder& holder1 = player1.getHolder();
+    Holder& holder2 = player2.getHolder();
+    NextPieceQueue& NPQ1 = player1.getNPQ();
+    NextPieceQueue& NPQ2 = player2.getNPQ();
+    unsigned long int score1 = player1.getScore();
+    unsigned long int score2 = player2.getScore();
     Menu& menu = gameState.getMenuState();
 
     float board1X = WINDOW_WIDTH / 3.0;
@@ -136,11 +153,14 @@ void Renderer::drawTwoPlayerGame(GameState gameState)
     drawNPQ(NPQ2, board2X, TWO_PLAYER_GAME, PLAYER_TWO);
 
     //Draw scores
-    drawScore(score, board1X, board1BottomY);
+    drawScore(score1, board1X, board1BottomY);
     drawScore(score2, board2X, board2BottomY);
 
     //Draw menu
-    drawMenu(menu);
+    drawMenu(menu, (WINDOW_WIDTH / 2.0), (WINDOW_HEIGHT / 2.0));
+
+    //Draw game over splash
+    drawGameOverSplash(gameState, player1, player2);
 }
 
 void Renderer::drawTile(Tile tile, float boardX)
@@ -445,27 +465,35 @@ Renderer::drawUIPiece(const std::shared_ptr<Piece>& pPiece, float pieceX, float 
     }
 }
 
-void Renderer::drawMenu(Menu& menu)
+void Renderer::drawMenu(Menu& menu, float xPos, float yPos)
+{
+    drawMenu(menu, xPos, yPos, true);
+}
+
+void Renderer::drawMenu(Menu& menu, float xPos, float yPos, bool drawBackground)
 {
     if (menu.getStatus() == MENU_OPEN)
     {
+
         //Large rectangle used to give the screen a dimmed effect
-        sf::RectangleShape dimBackground(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
-        dimBackground.setPosition(0, 0);
-        dimBackground.setFillColor(sf::Color(50, 50, 50, 200));
+        if (drawBackground)
+        {
+            sf::RectangleShape dimBackground(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
+            dimBackground.setPosition(0, 0);
+            dimBackground.setFillColor(sf::Color(50, 50, 50, 200));
+            pWindow->draw(dimBackground);
+        }
 
         //Background of menu
         sf::Vector2f menuBgV(menu.getWidth(), menu.getHeight()); //Menu's vector (shape)
         sf::RectangleShape menuBg(menuBgV);
         menuBg.setOrigin(menuBgV.x / 2.0, menuBgV.y / 2.0);
-        float menuBgX = WINDOW_WIDTH / 2.0;
-        float menuBgY = WINDOW_HEIGHT / 2.0;
+        float menuBgX = xPos;
+        float menuBgY = yPos;
         menuBg.setPosition(menuBgX, menuBgY);
         menuBg.setFillColor(sf::Color(0xCCCCCCAA));
-        menuBg.setOutlineColor(sf::Color::Green);
+        menuBg.setOutlineColor(sf::Color::Blue);
         menuBg.setOutlineThickness(2.0);
-
-        pWindow->draw(dimBackground);
         pWindow->draw(menuBg);
 
         //Draw menu buttons
@@ -520,6 +548,17 @@ void Renderer::drawMenu(Menu& menu)
     }
 }
 
+void Renderer::drawMainLogo()
+{
+    sf::Vector2i logoPosition(WINDOW_WIDTH / 2.0, WINDOW_HEIGHT / 3.0);
+    sf::Vector2i logoSize((WINDOW_WIDTH / 5.0), (WINDOW_HEIGHT / 3.0));
+    sf::IntRect logoRect(logoPosition, logoSize);
+
+    logoSprite.setTextureRect(logoRect);
+
+    pWindow->draw(logoSprite);
+}
+
 void Renderer::drawScore(unsigned long int score, float boardX, float boardBottomY)
 {
     sf::Text scoreText;
@@ -534,3 +573,80 @@ void Renderer::drawScore(unsigned long int score, float boardX, float boardBotto
     pWindow->draw(scoreText);
 }
 
+void Renderer::drawGameOverSplash(GameState gameState, Player& player1, Player& player2)
+{
+    if (gameState.isGameOver())
+    {
+        //Dimmed background
+        sf::RectangleShape dimBackground(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
+        dimBackground.setPosition(0, 0);
+        dimBackground.setFillColor(sf::Color(50, 50, 50, 100));
+        pWindow->draw(dimBackground);
+
+        //"GAME OVER"
+        sf::Text gameOverText;
+        gameOverText.setFont(mainFont);
+        gameOverText.setString("GAME OVER");
+        gameOverText.setFillColor(sf::Color::Black);
+        gameOverText.setCharacterSize(TEXT_SIZE * 4.0);
+        sf::FloatRect gameOverTextV = gameOverText.getGlobalBounds();
+        gameOverText.setOrigin(gameOverTextV.left + gameOverTextV.width / 2.0,
+                               gameOverTextV.top + gameOverTextV.height / 2.0);
+        float gameOverX = WINDOW_WIDTH / 2.0;
+        float gameOverY = WINDOW_HEIGHT / 2.0;
+        gameOverText.setPosition(gameOverX, gameOverY);
+        pWindow->draw(gameOverText);
+
+
+        float winTextX = gameOverX;
+        float winTextY = gameOverY + gameOverTextV.height;
+        if(gameState.getMode() == TWO_PLAYER_GAME)
+        {
+            //"Player x Wins!"
+            sf::Text winText;
+            winText.setFont(mainFont);
+            if(player1.getScore() > player2.getScore())
+            {
+                winText.setString("Player 1 Wins!");
+            }
+            else if (player1.getScore() < player2.getScore())
+            {
+                winText.setString("Player 2 Wins!");
+            }
+            else
+            {
+                winText.setString("Tied Game!");
+            }
+
+            winText.setFillColor(sf::Color::Black);
+            winText.setCharacterSize(TEXT_SIZE);
+            sf::FloatRect winTextV = winText.getGlobalBounds();
+            winText.setOrigin(winTextV.left + winTextV.width / 2.0,
+                              winTextV.top + winTextV.height / 2.0);
+            winText.setPosition(winTextX, winTextY);
+            pWindow->draw(winText);
+        }
+
+        if(gameState.getGameOverDelayTime().asMilliseconds() > GAME_OVER_DELAY)
+        {
+            //"Press any key to continue
+            sf::Text continueText;
+            continueText.setFont(mainFont);
+            continueText.setString("Press any key to continue");
+            continueText.setFillColor(sf::Color::Black);
+            continueText.setCharacterSize(TEXT_SIZE);
+            sf::FloatRect continueTextV = continueText.getGlobalBounds();
+            continueText.setOrigin(continueTextV.left + continueTextV.width / 2.0,
+                                   continueTextV.top + continueTextV.height / 2.0);
+            if(gameState.getMode() == ONE_PLAYER_GAME)
+            {
+                continueText.setPosition(gameOverX, gameOverY + gameOverTextV.height);
+            }
+            else
+            {
+                continueText.setPosition(winTextX, winTextY + gameOverTextV.height);
+            }
+            pWindow->draw(continueText);
+        }
+    }
+}

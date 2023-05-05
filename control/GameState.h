@@ -21,6 +21,7 @@
 #include "../input/Input.h"
 #include "../render/Menu.h"
 #include "../model/NextPieceQueue.h"
+#include "../model/Player.h"
 
 #include <memory>
 #include <SFML/System/Time.hpp>
@@ -31,8 +32,9 @@
 #define ONE_PLAYER_GAME 1
 #define TWO_PLAYER_GAME 2
 
-#define PLAYER_ONE 1
-#define PLAYER_TWO 2
+#define GAME_OVER_DELAY 3000 //milliseconds
+
+
 
 class GameState
 {
@@ -40,56 +42,36 @@ class GameState
     sf::RenderWindow* pWindow;
     int mode;
 
+    Player player1;
+    Player player2;
+
     Menu pauseMenu;
     Menu mainMenu;
-
-    sf::Clock gravityClock;
-    sf::Clock gravityClock2;
-    sf::Clock inputDelayClock;
-    sf::Clock inputDelayClock2;
-    sf::Clock inputRepeatClock;
-    sf::Clock inputRepeatClock2;
-    sf::Time gravityTime;
-    sf::Time gravityTime2;
-    sf::Time inputDelayTime;
-    sf::Time inputDelayTime2;
-    sf::Time inputRepeatTime;
-    sf::Time inputRepeatTime2;
 
     bool keyPressed;
     bool buttonPressed;
     bool joystickEngaged;
 
-
-    unsigned long int score;
-    unsigned long int score2;
-
-    Bag bag;
-    Bag bag2;
-
-    GhostPiece ghostPiece;
-    GhostPiece ghostPiece2;
-    Board board;
-    Board board2;
-    std::shared_ptr<Piece> pPiece;
-    std::shared_ptr<Piece> pPiece2;
-    Holder holder;
-    Holder holder2;
-    NextPieceQueue NPQ;
-    NextPieceQueue NPQ2;
+    bool gameOver;
+    sf::Clock gameOverDelayClock;
+    sf::Time gameOverDelayTime;
 
 
-    void tryRotateIPieceLeft(int player);
-    void tryRotateIPieceRight(int player);
+    void tryRotateIPieceLeft(Player& player);
+
+    void tryRotateIPieceRight(Player& player);
 
     void initOnePlayerGame();
 
-    void runRepeatableKeyInputs(int player);
-    void runRepeatedJoystickInputs(int player);
+    void runRepeatableKeyInputs(Player& player);
 
-    void runKeyInputs(int player);
-    void runButtonInputs(int player);
-    void runJoystickInputs(int player);
+    void runRepeatableJoystickInputs(Player& player);
+
+    void runKeyInputs(Player& player);
+
+    void runButtonInputs(Player& player);
+
+    void runJoystickInputs(Player& player);
 
 public:
 
@@ -98,62 +80,74 @@ public:
     void update(const Input& input);
 
     void setMode(int newMode);
+
     int getMode() const;
 
+    sf::Time getGameOverDelayTime();
+
+    bool isGameOver();
+
     void startMainMenu();
+
     void startOnePlayerGame();
+
     void startTwoPlayerGame();
 
     void processInputs(const Input& input);
 
-    Board& getBoardState();
-    Board& getBoard2State();
-    std::shared_ptr<Piece> getPieceState();
-    std::shared_ptr<Piece> getPiece2State();
-    GhostPiece& getGhostPieceState();
-    GhostPiece& getGhostPiece2State();
-    Holder& getHolderState();
-    Holder& getHolder2State();
-    NextPieceQueue& getNPQState();
-    NextPieceQueue& getNPQ2State();
     Menu& getMenuState();
-    unsigned long int getScoreState();
-    unsigned long int getScore2State();
 
-    void upAction(int player);
-    void downAction(int player);
-    void leftAction(int player);
-    void rightAction(int player);
-    void selectAction(int player);
-    void rotateLeftAction(int player);
-    void rotateRightAction(int player);
-    void dropAction(int player);
-    void holdAction(int player);
+    Player& getPlayer1State();
+
+    Player& getPlayer2State();
+
+    void upAction(Player& player);
+
+    void downAction(Player& player);
+
+    void leftAction(Player& player);
+
+    void rightAction(Player& player);
+
+    void selectAction(Player& player);
+
+    void rotateLeftAction(Player& player);
+
+    void rotateRightAction(Player& player);
+
+    void dropAction(Player& player);
+
+    void holdAction(Player& player);
+
     void toggleMenuAction();
+
     void closeMenuAction();
 
-    void addToScore(int player, unsigned long int dScore);
+    void spawnNewPiece(Player& player);
 
-    void spawnNewPiece(int player);
+    bool pieceCanMove(Player& player, int dRow, int dCol);
 
-    bool pieceCanMove(int player, int dRow, int dCol);
+    void movePieceLeft(const std::shared_ptr<Piece>& pPiece);
 
-    void movePieceLeft(int player);
-    void movePieceRight(int player);
-    void movePieceUp(int player);
-    void movePieceDown(int player);
+    void movePieceRight(const std::shared_ptr<Piece>& pPiece);
 
-    void placePiece(int player);
-    void dropPiece(int player);
+    void movePieceUp(const std::shared_ptr<Piece>& pPiece);
 
-    bool pieceCollides(int player);
+    void movePieceDown(const std::shared_ptr<Piece>& pPiece);
 
-    void tryRotatePieceLeft(int player);
-    void tryRotatePieceRight(int player);
+    void placePiece(Player& player);
 
-    void updateGhostPiece(int player);
+    void dropPiece(Player& player);
 
-    void holdPiece(int player);
+    bool pieceCollides(Player& player);
+
+    void tryRotatePieceLeft(Player& player);
+
+    void tryRotatePieceRight(Player& player);
+
+    void updateGhostPiece(Player& player);
+
+    void holdPiece(Player& player);
 
 };
 

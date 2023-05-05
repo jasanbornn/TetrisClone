@@ -8,12 +8,16 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 #include "../control/GameState.h"
 
 class Renderer
 {
     sf::RenderWindow* pWindow;
     sf::Font mainFont;
+
+    sf::Texture logoTexture;
+    sf::Sprite logoSprite;
 
     void drawTile(Tile tile, float boardX);
 
@@ -27,7 +31,9 @@ public:
     void render(const GameState& gameState);
 
     void drawMainMenu(GameState gameState);
+
     void drawOnePlayerGame(GameState gameState);
+
     void drawTwoPlayerGame(GameState gameState);
 
     void drawBoard(const Board& board, float xPos, float yPos);
@@ -42,9 +48,15 @@ public:
 
     void drawNPQ(const NextPieceQueue& NPQ, float boardX, int mode, int player);
 
-    void drawMenu(Menu& menu);
+    void drawMenu(Menu& menu, float xPos, float yPos);
+
+    void drawMenu(Menu& menu, float xPos, float yPos, bool drawBackground);
+
+    void drawMainLogo();
 
     void drawScore(unsigned long int score, float boardX, float boardBottomY);
+
+    void drawGameOverSplash(GameState gameState, Player& player1, Player& player2);
 
 
 };
