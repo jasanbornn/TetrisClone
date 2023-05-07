@@ -3,6 +3,7 @@
 //
 
 #include "GameState.h"
+#include "../WindowConstants.h"
 
 
 #include <utility>
@@ -34,7 +35,7 @@ GameState::GameState(sf::RenderWindow* pWindow) : player1(PLAYER_ONE), player2(P
     this->gameOver = false;
 
     //Initialize main menu
-    mainMenu = Menu(500, 500);
+    mainMenu = Menu((WINDOW_WIDTH / 4.0), (WINDOW_HEIGHT / 3.0));
     mainMenu.setStatus(MENU_OPEN);
     mainMenu.addButton(Button("SINGLE PLAYER", [this]() -> void
     {

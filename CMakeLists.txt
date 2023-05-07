@@ -8,3 +8,5 @@ add_executable(TetrisClone main.cpp input/InputHandler.cpp input/InputHandler.h 
 target_link_libraries(TetrisClone sfml-graphics)
 target_link_libraries(TetrisClone sfml-window)
 target_link_libraries(TetrisClone sfml-system)
+target_link_libraries(TetrisClone sfml-audio)
+

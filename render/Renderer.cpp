@@ -32,6 +32,11 @@ Renderer::Renderer(sf::RenderWindow* pWindow)
         pWindow->close();
     }
     logoSprite.setTexture(logoTexture);
+    sf::FloatRect logoSpriteV = logoSprite.getGlobalBounds();
+    logoSprite.setOrigin(logoSpriteV.left + logoSpriteV.width / 2.0, logoSpriteV.top + logoSpriteV.height / 2.0);
+    logoSprite.setPosition(WINDOW_WIDTH / 2.0, WINDOW_HEIGHT / 4);
+
+
 }
 
 void Renderer::render(const GameState& gameState)
@@ -58,7 +63,7 @@ void Renderer::render(const GameState& gameState)
 
 void Renderer::drawMainMenu(GameState gameState)
 {
-//    drawMainLogo();
+    drawMainLogo(logoBounds);
 
     Menu& menu = gameState.getMenuState();
     drawMenu(menu, (WINDOW_WIDTH / 2.0), (WINDOW_HEIGHT * 2.0 / 3.0), false);
@@ -166,7 +171,7 @@ void Renderer::drawTwoPlayerGame(GameState gameState)
     drawGameOverSplash(gameState, player1, player2);
 
     //Draw line and level info
-    drawLevelInfo(TWO_PLAYER_GAME,board1X, player1);
+    drawLevelInfo(TWO_PLAYER_GAME, board1X, player1);
     drawLevelInfo(TWO_PLAYER_GAME, board2X, player2);
 }
 
@@ -555,14 +560,8 @@ void Renderer::drawMenu(Menu& menu, float xPos, float yPos, bool drawBackground)
     }
 }
 
-void Renderer::drawMainLogo()
+void Renderer::drawMainLogo(sf::IntRect logoRect)
 {
-    sf::Vector2i logoPosition(WINDOW_WIDTH / 2.0, WINDOW_HEIGHT / 3.0);
-    sf::Vector2i logoSize((WINDOW_WIDTH / 5.0), (WINDOW_HEIGHT / 3.0));
-    sf::IntRect logoRect(logoPosition, logoSize);
-
-    logoSprite.setTextureRect(logoRect);
-
     pWindow->draw(logoSprite);
 }
 

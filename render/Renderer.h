@@ -18,6 +18,7 @@ class Renderer
 
     sf::Texture logoTexture;
     sf::Sprite logoSprite;
+    sf::IntRect logoBounds;
 
     void drawTile(Tile tile, float boardX);
 
@@ -52,7 +53,7 @@ public:
 
     void drawMenu(Menu& menu, float xPos, float yPos, bool drawBackground);
 
-    void drawMainLogo();
+    void drawMainLogo(sf::IntRect logoBounds);
 
     void drawScore(unsigned long int score, float boardX, float boardBottomY);
 
